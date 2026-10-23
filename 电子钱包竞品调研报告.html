@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电子钱包竞品调研报告 · 2026-10-22</title>
+<style>
+  :root{--ink:#1a1a1a;--sub:#5a5a5a;--line:#e3e3e3;--bg:#fafafa;--card:#fff;--accent:#2d6a4f;--warn:#b4431f;--warnbg:#fdf0ec;--good:#2d6a4f;--goodbg:#eef6f1;--tag:#eef1f4;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);line-height:1.75;font-size:15px;}
+  .wrap{max-width:1040px;margin:0 auto;padding:48px 28px 100px;}
+  h1{font-size:30px;font-weight:700;margin:0 0 6px;letter-spacing:-.3px;}
+  .meta{color:var(--sub);font-size:13px;margin-bottom:8px;}
+  h2{font-size:22px;font-weight:700;margin:52px 0 16px;padding-bottom:10px;border-bottom:2px solid var(--ink);}
+  h3{font-size:17px;font-weight:600;margin:28px 0 10px;color:var(--accent);}
+  h4{font-size:15px;font-weight:600;margin:18px 0 8px;}
+  p{margin:10px 0;}
+  a{color:var(--accent);}
+  .lead{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);padding:18px 22px;border-radius:8px;margin:18px 0;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:#f0f2f4;font-weight:600;}
+  td.y{color:var(--good);font-weight:600;}
+  td.n{color:var(--warn);}
+  .warn{background:var(--warnbg);border-left:4px solid var(--warn);padding:14px 18px;border-radius:6px;margin:14px 0;}
+  .good{background:var(--goodbg);border-left:4px solid var(--good);padding:14px 18px;border-radius:6px;margin:14px 0;}
+  .tag{display:inline-block;background:var(--tag);border-radius:4px;padding:1px 8px;font-size:12px;margin:0 3px 3px 0;color:var(--sub);}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px 24px;margin:24px 0;}
+  .toc ol{margin:6px 0;padding-left:22px;}
+  .toc a{text-decoration:none;}
+  .shot{margin:16px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card);}
+  .shot img{width:100%;display:block;}
+  .shot .cap{font-size:12px;color:var(--sub);padding:8px 12px;background:#f7f8f9;border-top:1px solid var(--line);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .note{font-size:12.5px;color:var(--sub);font-style:italic;}
+  ul{margin:8px 0;padding-left:22px;}
+  li{margin:4px 0;}
+  .pill{display:inline-block;padding:1px 9px;border-radius:20px;font-size:12px;font-weight:600;}
+  .pill.hw{background:#e7f0ff;color:#1a4d8f;}
+  .pill.kl{background:#fdeede;color:#9a5b12;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>电子钱包竞品调研报告</h1>
+<div class="meta">调研日期 2026-10-22 ｜ 定位:为自家「面向大众 + 企业的电子钱包(硬件为主)」定功能基线 ｜ 核心关切:用户设备/密钥丢失如何处理</div>
+<div class="meta">覆盖 7 家:Tangem · Ledger · Trezor · OneKey · Keystone(硬件派) ｜ Zengo · 币安 Web3(keyless/MPC 派)</div>
+
+<div class="toc">
+<strong>目录</strong>
+<ol>
+<li><a href="#s1">执行摘要</a></li>
+<li><a href="#s2">功能对比清单(7 家)</a></li>
+<li><a href="#s3">专题一:丢失恢复 · 硬件派 vs keyless 派安全对比</a></li>
+<li><a href="#s4">专题二:多钱包诉求 → 各家实现</a></li>
+<li><a href="#s5">对我们的功能建议(自家基线)</a></li>
+<li><a href="#s6">帮助文档体系对比</a></li>
+<li><a href="#s7">App 信息架构对比</a></li>
+<li><a href="#s8">附录:各家产品截图</a></li>
+</ol>
+</div>
+
+<h2 id="s1">1. 执行摘要</h2>
+<div class="lead">
+市场已从"硬件 vs 软件"的二选一走向<strong>融合</strong>:硬件厂(OneKey、Tangem)主动叠加 keyless/托管恢复层,软件厂(币安、Zengo)用 MPC 把"无助记词、可找回"做成大众标配。对我们"面向大众 + 企业"的双定位,<strong>单押一派都不够</strong>——大众要"丢了能找回"的容错,企业要"信任最小化 + 多签/门限"的自主。最值得走的范式是<strong>「硬件安全底座 + 可选托管/MPC 恢复层」的混合架构</strong>。而<strong>企业/B 端方案是全行业集体空档</strong>(仅 Ledger 有 Enterprise),是最该重点打的差异化。
+</div>
+
+<h4>五个最关键的发现</h4>
+<ul>
+<li><strong>丢失恢复是真正的分水岭。</strong>纯硬件派(Tangem)"全卡丢光 + 没设助记词 = 永久归零";keyless 派(Zengo/币安)扫脸/邮箱/云几秒找回,但要信厂商服务器。两派在防不同的威胁。</li>
+<li><strong>Tangem 的多卡备份有硬伤</strong>(见目标一评审):激活后不能补卡、改密码不能作废丢失的旧卡——冗余买定离手,这是可以甩开它的点。</li>
+<li><strong>恢复方案百花齐放:</strong>Ledger Recover(2/3 Shamir 分片 + 三国 HSM + KYC)、Trezor Shamir 门限、Zengo 律所托管 + GitHub 自救、OneKey Lite NFC 卡 / Keyless、币安 MPC 3 片。可借鉴的成熟范式很多。</li>
+<li><strong>App 信息架构在收敛:</strong>各家都把高频交易动作(买/卖/Swap/Earn)前置到一级导航,把恢复/备份沉到独立专题。币安"同一入口切 CeFi⇄DeFi + 无感互转"最值得学。</li>
+<li><strong>功能在"超钱包化":</strong>OneKey 已把 Swap/法币/DeFi/现货/永续合约全塞进 App;Tangem 做了 Tangem Pay 虚拟 Visa 卡。钱包正长成"Web3 金融入口"。</li>
+</ul>
+
+<h2 id="s2">2. 功能对标矩阵(7 家)</h2>
+<p class="note">派别:<span class="pill hw">硬件</span> 私钥锁离线芯片 ｜ <span class="pill kl">keyless</span> MPC 无助记词软件钱包。价格为第三方口径,正式引用前以官方实时价为准。</p>
+
+<table>
+<tr><th>维度</th><th>Tangem</th><th>Ledger</th><th>Trezor</th><th>OneKey</th><th>Keystone</th><th>Zengo</th><th>币安 Web3</th></tr>
+<tr><td>派别</td><td>硬件</td><td>硬件</td><td>硬件</td><td>硬件(软硬一体)</td><td>硬件</td><td>keyless</td><td>keyless</td></tr>
+<tr><td>形态</td><td>NFC卡/指环,无屏无电</td><td>Nano/Flex/Stax,带屏</td><td>Safe 3/5/7,带屏</td><td>Classic/Pro,带屏</td><td>3 Pro,大触屏二维码</td><td>纯App无硬件</td><td>App内置无硬件</td></tr>
+<tr><td>连接</td><td>NFC</td><td>USB/蓝牙</td><td>USB/(Safe7蓝牙)</td><td>USB/蓝牙/NFC/二维码</td><td>二维码air-gapped</td><td>—</td><td>—</td></tr>
+<tr><td>芯片安全</td><td>EAL6+三星</td><td>EAL5+/6+ SE</td><td>EAL6+(Safe7双芯)</td><td>EAL6+(2~4颗)</td><td>三颗SE</td><td>设备TEE</td><td>软件MPC</td></tr>
+<tr><td>开源</td><td class="y">是</td><td class="n">否(争议)</td><td class="y">是</td><td class="y">是</td><td class="y">是</td><td>部分</td><td class="n">否</td></tr>
+<tr><td>链/币种</td><td>90+链/14k+币</td><td>100+链/5.5k+币</td><td>数千币</td><td>100+链/30k+币</td><td>5.5k+币</td><td>1000+资产</td><td>60+链</td></tr>
+<tr><td>Swap</td><td class="y">✓聚合</td><td class="y">✓50+商</td><td class="y">✓</td><td class="y">✓聚合</td><td>经第三方钱包</td><td class="y">✓Changelly</td><td class="y">✓聚合DEX</td></tr>
+<tr><td>法币出入金</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="n">弱</td><td class="y">✓</td><td class="y">✓</td></tr>
+<tr><td>Staking</td><td class="y">✓稳定币生息</td><td class="y">✓15+资产</td><td class="y">✓ETH/ADA/SOL</td><td class="y">✓DeFi Earn</td><td>有限</td><td class="y">✓ETH/XTZ</td><td class="y">✓集成dApp</td></tr>
+<tr><td>App端</td><td>仅移动</td><td>桌面+移动</td><td>桌面+网页+移动</td><td>桌面+移动+插件</td><td>Nexus(弱)</td><td>仅移动</td><td>币安App内+插件</td></tr>
+<tr><td>无助记词</td><td class="y">默认无(可选)</td><td class="n">24词</td><td class="n">12/20/24词</td><td>助记词/可选Keyless</td><td class="n">助记词</td><td class="y">MPC无</td><td class="y">MPC无</td></tr>
+<tr><td>丢失恢复</td><td>多卡冗余(全丢归零)</td><td>助记词/Recover付费</td><td>助记词/Shamir分片</td><td>助记词/Lite卡/Keyless</td><td>助记词/Shamir</td><td>扫脸+云+邮箱</td><td>MPC3片+恢复密码</td></tr>
+<tr><td>企业方案</td><td class="n">无</td><td class="y">Enterprise</td><td class="n">无(门限可用)</td><td class="n">无</td><td class="n">无</td><td>Business多签</td><td class="n">无</td></tr>
+<tr><td>价格</td><td>$55~$180</td><td>$59~$399</td><td>$59~$249</td><td>$79~$278</td><td>~$149</td><td>免费/Pro$199年</td><td>免费</td></tr>
+</table>
+
+<h2 id="s3">3. 专题一:丢失恢复 · 硬件派 vs keyless 派安全对比</h2>
+<p class="note">这是本次调研的核心关切,也是自家方案最关键的分叉。结论:不是"谁绝对更安全",而是两派在防不同威胁、把信任交给不同对象。</p>
+
+<div class="good"><strong>先破一个误解:keyless 不等于"没有私钥"。</strong>私钥一直存在,只是形态变了。硬件派把完整私钥锁在离线芯片、永不触网;keyless 派(MPC)把私钥拆成 2~3 个 share 分布在设备/服务器/云,签名时在线协同计算、全程不拼出完整私钥。两派都"有私钥",区别在下面。</div>
+
+<h3>3.1 各自防什么、怕什么</h3>
+<table>
+<tr><th>维度</th><th>硬件派(Ledger/Trezor/Tangem/Keystone)</th><th>keyless/MPC 派(币安/Zengo/OneKey Keyless)</th></tr>
+<tr><td>私钥是否触网</td><td class="y">否,锁离线芯片</td><td>是,share 在联网环境协同签名</td></tr>
+<tr><td>最强防线</td><td>物理隔离——远程黑客/恶意软件够不着私钥</td><td>无单点——偷一个 share 没用,要同时攻破 2 处</td></tr>
+<tr><td>最怕什么</td><td>设备丢失/损坏 + 物理接触 + 助记词被偷</td><td>服务器被攻破/作恶、MPC 实现有后门、云备份被撞库</td></tr>
+<tr><td>信任交给谁</td><td class="y">只信自己(私钥全在你手上)</td><td>信厂商服务器 + 它的 MPC 实现没问题</td></tr>
+<tr><td>可验证性</td><td class="y">可完全离线、开源可审计(Trezor/Keystone)</td><td>普通人无法验证服务器端那片 share 怎么处理</td></tr>
+<tr><td>丢失恢复</td><td class="n">难——靠助记词/分片/多卡自己扛(Tangem 全丢归零)</td><td class="y">易——扫脸/邮箱/云一拉就回(Zengo 几秒)</td></tr>
+</table>
+<p><strong>本质:</strong>硬件派押"物理隔离 + 自我保管"——够不着,但你自己得扛住保管和丢失;keyless 派押"密码学门限 + 厂商协同"——方便恢复,但你得信那个服务器。</p>
+
+<h3>3.2 分场景:谁更安全(别笼统答)</h3>
+<ul>
+<li><strong>防远程大规模攻击:</strong>两派都不错(硬件靠离线,MPC 靠多方)。</li>
+<li><strong>防厂商作恶/服务器被攻破:</strong><span style="color:#1a4d8f;font-weight:600;">硬件派明显更强</span>——你的私钥压根不在厂商那儿;MPC 派这里是软肋。</li>
+<li><strong>防用户自己犯错(丢设备/丢助记词/记不住):</strong><span style="color:#9a5b12;font-weight:600;">keyless 派明显更强</span>——这正是它的立身之本;硬件派最脆(Tangem 全卡丢 + 没设助记词 = 永久归零)。</li>
+<li><strong>防胁迫/物理抢夺:</strong>打平——硬件有诱饵钱包/passphrase(Keystone/OneKey),MPC 有生物识别锁 + 提现限额(Zengo Pro)。</li>
+</ul>
+<div class="lead"><strong>结论:"谁更安全"取决于你最怕哪种威胁。</strong>高净值老手怕厂商和黑客 → 选硬件;大众新手怕自己把钱弄丢 → 选 keyless。</div>
+
+<h3>3.3 为什么有的选硬件、有的选无硬件 —— 本质是"安全自主权 vs 易用容错"的取舍</h3>
+<div class="grid2">
+<div class="shot" style="padding:16px 20px;">
+<h4><span class="pill hw">选硬件</span> 服务"信任最小化"诉求</h4>
+<ul>
+<li>用户:高净值、长期持有、老手</li>
+<li>诉求:"除了我自己谁都动不了,也查不到"</li>
+<li>愿承担保管成本(记助记词、保管设备、学习门槛)</li>
+<li>怕:交易所暴雷、厂商跑路、政府传票、远程黑客</li>
+<li>代表:Ledger / Trezor / Tangem / Keystone</li>
+</ul>
+</div>
+<div class="shot" style="padding:16px 20px;">
+<h4><span class="pill kl">选无硬件</span> 服务"大众可用性"诉求</h4>
+<ul>
+<li>用户:新手、小额、把钱包当 App 用</li>
+<li>诉求:"别让我记 24 个单词、换手机别丢钱"</li>
+<li>硬件那套"抄助记词、丢了就没"对大众是劝退点甚至资产流失主因</li>
+<li>愿用"信任厂商一部分"换"像 Web2 能找回账号"</li>
+<li>代表:币安 Web3 / Zengo;OneKey 用 Keyless Wallet 兼容</li>
+</ul>
+</div>
+</div>
+<div class="good"><strong>关键:市场不是二选一,而是在融合(调研实锤)。</strong>OneKey(硬件厂)自己加了 Keyless Wallet;Tangem(硬件厂)把助记词做成可选、并上线 Tangem Pay 支付账户;各家都在"硬件安全底座"上叠"软件易用恢复层"。</p></div>
+
+<h3>3.4 各家丢失恢复方案一览(可借鉴的成熟范式)</h3>
+<table>
+<tr><th>产品</th><th>恢复机制</th><th>特点 / 取舍</th></tr>
+<tr><td>Tangem</td><td>多卡冗余(2~3 卡镜像同一私钥)</td><td class="n">激活后不能补卡;全卡丢 + 无助记词 = 永久归零</td></tr>
+<tr><td>Ledger</td><td>助记词 + Ledger Recover(付费)</td><td>2/3 Shamir 分片 + 三国 HSM(Ledger/Coincover/EscrowTech)+ KYC;$9.99/月;争议在信任叙事</td></tr>
+<tr><td>Trezor</td><td>助记词 + Shamir Backup(SLIP-39)</td><td class="y">门限分片(如 3-of-5),丢几片不致命;分组门限可服务企业金库;天然适配继承</td></tr>
+<tr><td>OneKey</td><td>助记词 + Lite NFC 卡 + Keyless</td><td class="y">Lite 一碰备份一碰恢复免手抄;Keyless 邮箱/Google/Apple 登录无硬件可恢复</td></tr>
+<tr><td>Keystone</td><td>助记词 + Shamir 分片 + 自毁</td><td>air-gapped;自毁仅擦本地不影响助记词恢复</td></tr>
+<tr><td>Zengo</td><td>MPC + 扫脸 + 云 + 邮箱(3 要素)</td><td class="y">几秒找回;律所托管主密钥 + 服务器下线即发 GitHub 供自救(堵住"公司没了就归零")</td></tr>
+<tr><td>币安 Web3</td><td>MPC 3 片(2-of-3)+ 恢复密码</td><td>2 片用户持有 1 片币安侧;恢复密码丢了币安也救不回</td></tr>
+</table>
+
+<div class="lead">
+<strong>3.5 对自家"面向大众 + 企业"的含义(建议):</strong>大众和企业的取舍恰好相反——大众要 keyless 的容错,企业要硬件的自主。<strong>单押一派都不够,应走"硬件安全底座 + 可选托管/MPC 恢复层"的混合架构:</strong>极致自主用户用纯硬件 + 自管分片;怕丢的大众开启托管恢复层(类 Ledger Recover 或 Zengo 自救);企业用多签/门限(类 Trezor Shamir 分组)+ 可审计。而<strong>企业方案是集体空档(仅 Ledger Enterprise),是最该重点打的差异化</strong>,不要在个人消费硬件上和 Tangem/OneKey 拼价格拼功能。
+</div>
+
+<h2 id="s4">4. 专题二:多钱包诉求 → 各家实现</h2>
+<p class="note">从"用户为什么要多个钱包"的真实诉求出发,逐一拆解 7 家怎么实现,最后落到对自家的分层设计启示。部分厂商细节标注"待核实"(官方资料未找到可靠来源,不臆断)。</p>
+
+<h3>4.1 用户为什么要多钱包(6 类场景,按诉求强弱)</h3>
+<table>
+<tr><th>#</th><th>场景</th><th>说明</th><th>典型代表</th></tr>
+<tr><td>1</td><td>资金分层(最高频)</td><td>日常小额用热钱包、长期大额进冷钱包。热钱包持续联网钓鱼暴露面大,大额值得独立钱包而非同一钱包下的独立账户</td><td>Tangem 讲得最透</td></tr>
+<tr><td>2</td><td>用途隔离 / 记账清晰</td><td>储蓄、交易、某 DeFi 项目各一账户贴标签——"带标签的隔间",图条理清楚,非安全隔离</td><td>各家通用</td></tr>
+<tr><td>3</td><td>链上隐私 / 防关联</td><td>不同账户用不同地址,降低链上追踪</td><td>Zengo Privacy Mode</td></tr>
+<tr><td>4</td><td>多实体 / 多人分账(企业刚需)</td><td>个人 vs 团队 vs 公司分开,企业按角色分权</td><td>Zengo Business / OneKey 团队钱包</td></tr>
+<tr><td>5</td><td>风险实验隔离</td><td>独立种子钱包碰高风险 DeFi、撸空投,被盗不波及主资产</td><td>各家通用</td></tr>
+<tr><td>6</td><td>胁迫防护(plausible deniability)</td><td>passphrase 隐藏钱包,受胁迫只交诱饵钱包</td><td>Trezor/Keystone/Ledger/OneKey 都主打</td></tr>
+</table>
+
+<h3>4.2 两种实现形态(关键分野,Tangem 讲得最清楚)</h3>
+<div class="warn">
+<strong>① 多账户 = 同一套私钥 HD 派生:</strong>一份助记词(或一组卡)全恢复,成本低;但只是"逻辑隔间"不是安全边界,链上可能被关联。<br><br>
+<strong>② 多套独立钱包 = 各自独立私钥:</strong>一个被攻破不波及其他,真隔离 + 支持胁迫防护;代价是每套单独备份、恢复成本翻倍。<br><br>
+多数用户最终是混合用法。<strong>这个分野直接决定备份恢复复杂度,必须和丢失恢复方案一起设计(呼应专题一:冗余不可后补)。</strong>
+</div>
+
+<h3>4.3 七家横向对比</h3>
+<table>
+<tr><th>维度</th><th>Tangem</th><th>Ledger</th><th>Trezor</th><th>Keystone</th><th>OneKey</th><th>Zengo</th><th>币安 Web3</th></tr>
+<tr><td>多账户 HD 派生</td><td>✅ 单钱包 ≤20</td><td>✅ 无限</td><td>✅ 每币 ≤10(需前账户用过)</td><td>✅(经第三方)</td><td>✅ 多链单种子</td><td class="note">N/A 非种子</td><td>✅ 种子钱包 ≤20</td></tr>
+<tr><td>多套独立钱包</td><td>✅ 多组卡无限</td><td>✅ 多套种子(restore 切换)</td><td>✅ 靠 passphrase</td><td class="y">✅ 一机 ≤3 套独立助记词</td><td>✅ 同 App 多独立(软/硬/Keyless)</td><td>✅ 多独立 MPC 钱包</td><td>✅ Keyless+导入并列</td></tr>
+<tr><td>passphrase 隐藏钱包</td><td class="note">未找到</td><td>✅ 任意多 +attach PIN</td><td class="y">✅ 任意多(强项)</td><td>✅ 每套种子上再叠多个</td><td class="y">✅ 多个 +Attach to PIN</td><td class="n">❌ MPC 无</td><td class="note">未找到</td></tr>
+<tr><td>数量上限</td><td>账户 20;独立钱包无限</td><td>账户无限;passphrase 无限</td><td>每币 10;passphrase 无限</td><td>独立种子 3;passphrase 无限</td><td>未明确</td><td>未明确</td><td>派生账户 20</td></tr>
+<tr><td>恢复是否统一</td><td>多账户一卡组全恢复;多钱包各组单备份</td><td>一种子全标准账户;passphrase/多种子另备</td><td>一种子全标准账户;passphrase/多钱包另记</td><td>每套种子各自独立备份</td><td>各独立钱包/passphrase 各自备份</td><td>Recovery Kit+3FA,粒度待核实</td><td>Keyless 与种子钱包分别备份</td></tr>
+<tr><td>企业 / 多人</td><td class="note">未找到</td><td class="note">待核实</td><td>仅 DIY</td><td>✅ 接 Gnosis Safe 签名器</td><td>团队命名(治理待核实)</td><td class="y">✅ Business 多角色治理</td><td class="note">未找到</td></tr>
+</table>
+
+<h3>4.4 逐家要点(谁适合什么)</h3>
+<ul>
+<li><strong>Keystone(硬件端最彻底):</strong>一台设备管最多 3 套完全独立助记词(各用不同密码),每套之上还能叠多个 passphrase 隐藏钱包,支持 Shamir 分片;可接 Gnosis Safe 做多签签名器(非多签平台本身)。</li>
+<li><strong>OneKey(整合体验最好):</strong>同一 App 管多个独立钱包(软件/硬件/Keyless),可命名加头像区分个人/团队;独有 <strong>Attach to PIN</strong>——不同 PIN 绑不同 passphrase,快速切换多隐藏钱包免手输。</li>
+<li><strong>Zengo(企业分账最佳样板):</strong>多钱包是"独立实体可各附不同安全策略"(MPC 下各自独立份额);<strong>Zengo Business 在 seedless 下做多用户治理,角色分 Admin/Approver/Controller/Viewer,邮件邀请分配撤销</strong>——企业多实体分账的现成范式。</li>
+<li><strong>Ledger / Trezor / 币安种子钱包(HD 派生派):</strong>胜在"一份助记词全恢复"低成本;passphrase 是隐藏钱包主力(Ledger 可 attach PIN、Trezor 每次手输主打 deniability),但 passphrase 丢了永久丢。</li>
+<li><strong>Tangem:</strong>单钱包 ≤20 account(同主种子 HD 派生),同时 App 内可管无限个独立钱包(每个对应自己一组卡,真多套独立私钥);无企业多签方案。</li>
+</ul>
+
+<div class="good">
+<strong>4.5 对自家的启示(分层设计):</strong>
+<ul>
+<li><strong>大众层:</strong>默认"一套密钥 HD 派生多账户 + 一份备份全恢复"保易用(学 Tangem/币安:20 账户上限 + 账户列表切换)。</li>
+<li><strong>进阶 / 高净值层:</strong>提供"一机多套独立种子 + passphrase + Attach-to-PIN"做真隔离与胁迫防护(学 Keystone + OneKey)。</li>
+<li><strong>企业层:</strong>单独做"MPC + 多角色审批(Admin/Approver/Controller/Viewer)+ 可对接 Gnosis Safe 多签"治理线(学 Zengo Business),<strong>不要用消费级 passphrase DIY 硬撑企业分权</strong>。</li>
+</ul>
+</div>
+<p class="note">待核实:Tangem/币安导入钱包 passphrase 支持、Ledger 企业线、Keystone 多种子切换 UI、Zengo 多钱包恢复粒度、OneKey 企业治理。</p>
+
+<h2 id="s5">5. 自家钱包功能基线建议</h2>
+<p class="note">基于 7 家对标,按"必做基线 / 差异化 / 暂不做"给出。<strong>均为建议,非结论</strong>,需结合产品定位与资源再定优先级。前提:面向海外/合规市场的大众 + 企业用户。</p>
+
+<h3>7.1 必做基线(人人都有,不做就缺胳膊少腿)</h3>
+<table>
+<tr><th>功能</th><th>说明</th><th>对标参考</th></tr>
+<tr><td>离线安全芯片(EAL6+)</td><td>硬件派标配,私钥不出芯片 + 设备屏确认交易防盲签</td><td>全部硬件家</td></tr>
+<tr><td>收发 / Swap / 法币出入金</td><td>一站式,接聚合器和第三方 provider</td><td>Ledger/OneKey/Tangem</td></tr>
+<tr><td>多链多币种 + WalletConnect</td><td>主流链全覆盖,经 WalletConnect 接 dApp</td><td>全部</td></tr>
+<tr><td>多账户 / passphrase 隐藏钱包</td><td>资金分层、用途隔离(详见第 4 节多钱包专题)</td><td>全部硬件家</td></tr>
+<tr><td>恢复/备份独立专题</td><td>文档和 App 内都给独立显眼入口</td><td>全部</td></tr>
+<tr><td>配套 App 承接完整在线场景</td><td>别像 Keystone Nexus 那样把用户推给第三方</td><td>反面:Keystone</td></tr>
+</table>
+
+<h3>7.2 差异化重点(甩开竞品的地方)</h3>
+<div class="good">
+<ul>
+<li><strong>① 混合恢复架构(最核心):</strong>硬件安全底座 + 可选托管/MPC 恢复层。大众开启"丢了能找回"的容错(类 Ledger Recover / Zengo 自救),老手用纯硬件自管。直接解决你最关切的"设备丢失怎么办",且避开 Tangem"全丢归零"的硬伤。</li>
+<li><strong>② 企业/B 端方案(集体空档):</strong>多签、团队钱包、多实体/多项目分账、权限与审计。除 Ledger Enterprise 外几乎无人做,是最该重点打的方向。</li>
+<li><strong>③ 可后补的备份:</strong>Tangem 冗余"买定离手、丢一张不能补"是硬伤。若支持激活后追加/替换备份因子,是明确体验优势(需评估安全模型)。</li>
+<li><strong>④ 面向支付的延伸:</strong>Tangem Pay(虚拟 Visa + 稳定币消费)已验证钱包往支付走的路径,契合稳定币定位。</li>
+</ul>
+</div>
+
+<h3>7.3 暂不做 / 审慎(别盲目堆)</h3>
+<ul>
+<li><strong>全资产交易堆料:</strong>OneKey 把现货/永续合约/美股关联塞进 App,带来合规与认知门槛。面向大众 + 企业未必需要,别正面拼。</li>
+<li><strong>纯 air-gapped 二维码:</strong>Keystone 那套每笔来回扫码,体验繁琐,大众场景不友好。</li>
+<li><strong>语言/中文:</strong>不面向中国大陆,中文不是卖点也不是竞品短板(已确认前提)。</li>
+</ul>
+
+<div class="warn"><strong>一个必须提前定的设计分叉:</strong>多钱包用"多账户(一套私钥派生)"还是"多套独立私钥"实现,直接决定备份恢复复杂度——结合目标一发现(冗余不可后补),若走多套独立私钥,丢失恢复成本会成倍放大。<strong>多钱包能力和丢失恢复方案是强耦合的,必须一起设计。</strong>详见第 4 节。</div>
+
+<h2 id="s6">6. 帮助文档体系对比</h2>
+<p class="note">关注点:怎么组织文档、有没有把"丢失/备份/恢复"做成独立专题(而非散落 FAQ)、分层逻辑。</p>
+<table>
+<tr><th>产品</th><th>组织逻辑</th><th>恢复/备份专题</th><th>亮点</th></tr>
+<tr><td>Tangem</td><td>混合:入门/安全按用户旅程,Pay/Services 按产品线</td><td class="y">有,Security 下独立 "How Backup Works" + "Device Loss &amp; Recovery" 两篇</td><td>多语言;恢复单列成专题不散落</td></tr>
+<tr><td>Ledger</td><td>双体系:Support(排障操作)+ Academy(科普获客),多轴(产品×旅程×难度)</td><td class="y">有,Ledger Recover 独立专题 + 设备丢失被盗专题</td><td>"怎么操作"和"为什么安全"分站运营</td></tr>
+<tr><td>Trezor</td><td>双体系:Guides(how-to)+ Learn(what/why)</td><td class="y">有,Guides 下独立 "Backups &amp; recovery" 一级栏目(SLIP39 + Shamir)</td><td>恢复专题颗粒度细(含门限方案)</td></tr>
+<tr><td>OneKey</td><td>混合:设备按型号 + App 按功能 + 独立备份/排障专题</td><td class="y">有,独立"备份与恢复"专题(Lite/KeyTag/Keyless 自成体系)</td><td>多种备份介质各有文档</td></tr>
+<tr><td>Keystone</td><td>混合:产品维度为主干 + 用户身份辅助入口</td><td>分散在 Recovery Phrase / Security Practices / Self-Destruct 几页</td><td>按用户身份(新手/BTCer/Web3)导航</td></tr>
+<tr><td>币安 Web3</td><td>三层按用户意图:Academy(是什么)+ FAQ(怎么做)+ 博客(有什么新)</td><td class="y">有,围绕"无种子短语"的专题簇(备份三法 + 恢复 + MPC)</td><td>按意图分层而非按功能堆</td></tr>
+<tr><td>Zengo</td><td colspan="3" class="note">文档体系补充调研未回,待补</td></tr>
+</table>
+<div class="good"><strong>共性启示:</strong>所有家都把"丢失/备份/恢复"做成<strong>独立且显眼的专题</strong>,不混在普通 FAQ 里。头部厂商(Ledger/Trezor)还把文档拆成"排障操作"和"科普获客"双体系。自家应照此:操作文档与教育内容分开,恢复/丢失预留独立专题位。</div>
+
+<h2 id="s7">7. App 信息架构对比</h2>
+<p class="note">关注点:一级导航怎么摆、高频金融动作放哪、恢复功能藏在哪。</p>
+<table>
+<tr><th>产品</th><th>一级导航(主模块)</th><th>IA 特征</th></tr>
+<tr><td>Tangem</td><td>单屏 Home + 底部搜索条上滑唤出 Markets(For You/Earn/News 聚合)</td><td>少 Tab、强聚合、弱决策负担;出入金做成单向意图流</td></tr>
+<tr><td>Ledger</td><td>桌面:Home/Accounts/Swap/Earn/Discover/My Ledger ｜ 移动:Home/Swap/Earn/Card</td><td>交易动作(买卖/Swap/Earn)前置一级;恢复沉到 My Ledger + Recover 专题</td></tr>
+<tr><td>Trezor</td><td>Dashboard/Accounts/Trade(统一买卖换)/Staking/Settings</td><td>近两年刻意把 Swap 提一级、Buy/Sell/Swap 统一入口</td></tr>
+<tr><td>OneKey</td><td>资产/Trade/Earn/Discover/Market/Settings</td><td>功能最"重",把现货/永续合约都塞进 App;备份恢复在 Settings 独立专题</td></tr>
+<tr><td>Keystone</td><td>Nexus:资产/Send/Receive/Swap/扫码/设置</td><td class="n">配套 App 功能单薄,在线操作被迫外包给 MetaMask 等第三方</td></tr>
+<tr><td>币安 Web3</td><td>[Wallets] 入口顶部切 CeFi⇄Web3;Web3 侧:资产/Swap/Bridge/dApp/空投/设置</td><td class="y">同一入口切交易所与自托管,中间走 App 内免费即时划转(非链上),把私钥藏成后台 MPC</td></tr>
+<tr><td>Zengo</td><td colspan="2" class="note">App IA 补充调研未回,待补</td></tr>
+</table>
+<div class="good"><strong>共性启示:</strong>行业已验证"降低交易路径深度、高频金融动作前置到一级导航"的方向。<strong>币安的"一个账户体系 + 无感互转 + keyless 把 CeFi/DeFi 割裂感抹平"最值得学</strong>(交易所用户平滑导入自托管)。<strong>Keystone 是反面教训:</strong>配套 App 功能不足、把用户推给第三方钱包,丧失体验闭环与品牌粘性——自家做硬件,配套 App 必须承接完整在线场景。</div>
+
+<h2 id="s8">8. 附录:各家产品截图</h2>
+<p class="note">官网首页/产品页/恢复方案页截图,采集于 2026-10-22。币安为首页(官网反爬,Web3 钱包页抓取受限)。</p>
+
+<h3>Tangem</h3>
+<div class="grid2">
+<div class="shot"><img src="截图/01_tangem_首页.png" alt="Tangem首页"><div class="cap">Tangem 官网首页</div></div>
+<div class="shot"><img src="截图/02_tangem_定价.png" alt="Tangem定价"><div class="cap">Tangem 定价(2/3 卡套装 + 指环)</div></div>
+</div>
+
+<h3>Ledger</h3>
+<div class="grid2">
+<div class="shot"><img src="截图/03_ledger_首页.png" alt="Ledger首页"><div class="cap">Ledger 官网首页</div></div>
+<div class="shot"><img src="截图/04_ledger_recover恢复服务.png" alt="Ledger Recover"><div class="cap">Ledger Recover 托管恢复服务页</div></div>
+</div>
+
+<h3>Trezor</h3>
+<div class="grid2">
+<div class="shot"><img src="截图/05_trezor_首页.png" alt="Trezor首页"><div class="cap">Trezor 官网首页</div></div>
+<div class="shot"><img src="截图/06_trezor_safe5产品.png" alt="Trezor Safe 5"><div class="cap">Trezor Safe 5 产品页</div></div>
+</div>
+
+<h3>OneKey</h3>
+<div class="shot"><img src="截图/07_onekey_首页.png" alt="OneKey首页"><div class="cap">OneKey 官网首页(国产软硬一体)</div></div>
+
+<h3>Keystone</h3>
+<div class="grid2">
+<div class="shot"><img src="截图/08_keystone_首页.png" alt="Keystone首页"><div class="cap">Keystone 官网首页</div></div>
+<div class="shot"><img src="截图/14_keystone_3pro产品.png" alt="Keystone 3 Pro"><div class="cap">Keystone 3 Pro 产品页(air-gapped 二维码)</div></div>
+</div>
+
+<h3>Zengo</h3>
+<div class="grid2">
+<div class="shot"><img src="截图/12_zengo.png" alt="Zengo 1"><div class="cap">Zengo 官网(MPC keyless)</div></div>
+<div class="shot"><img src="截图/13_zengo_2.png" alt="Zengo 2"><div class="cap">Zengo 官网(恢复/安全)</div></div>
+</div>
+
+<h3>币安 Web3</h3>
+<div class="shot"><img src="截图/11_binance_首页.png" alt="币安首页"><div class="cap">币安首页(用户提供;官网反爬,Web3 钱包页抓取受限)</div></div>
+
+<p class="meta" style="margin-top:48px;border-top:1px solid var(--line);padding-top:16px;">
+本报告原始素材(7 家逐家详述、含出处 URL)见同目录 <code>原始素材_*.md</code> 与 <code>专题_*.md</code>;目标一《Tangem 备份与补卡机制技术评审》见 wiki/research 目录。所有数据标注出处,推断与待核实项已在原始素材中标明。
+</p>
+
+
+
+
+
+</div>
+</body>
+</html>

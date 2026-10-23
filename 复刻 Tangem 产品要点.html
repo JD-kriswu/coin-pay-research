@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>复刻 Tangem 产品要点</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 左侧粘性目录 + 右侧报告正文；卡片 / 芯片的视觉语汇只用在页眉和示意图上 */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#15202b; --muted:#566271; --line:#d8dee6;
+  --accent:#1d5d8a; --accent-soft:#e3eef6; --brass:#93702a; --brass-soft:#f5ecd9;
+  --warn:#a8501d; --warn-soft:#f8e7dc; --good:#2c7049; --good-soft:#e0f0e6;
+  --code-bg:#eef1f5;
+  --f-display:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141a; --surface:#161d26; --ink:#e4e9ef; --muted:#9aa6b3; --line:#2a3542;
+  --accent:#72b2e0; --accent-soft:#17293a; --brass:#d4ab55; --brass-soft:#2c2416;
+  --warn:#e38d5c; --warn-soft:#331f15; --good:#73c493; --good-soft:#15291d;
+  --code-bg:#1d2631; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --surface:#161d26; --ink:#e4e9ef; --muted:#9aa6b3; --line:#2a3542;
+  --accent:#72b2e0; --accent-soft:#17293a; --brass:#d4ab55; --brass-soft:#2c2416;
+  --warn:#e38d5c; --warn-soft:#331f15; --good:#73c493; --good-soft:#15291d;
+  --code-bg:#1d2631; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--code-bg);padding:.1em .4em;border-radius:4px;word-break:break-word}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.3;margin:0}
+p{margin:0}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* Header */
+.mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;padding-block:48px 36px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;font-weight:500}
+.mast h1{font-size:clamp(28px,4.4vw,44px);margin:10px 0 14px}
+.mast .lede{max-width:62ch;color:var(--muted);font-size:16px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:500}
+.cards-art{width:230px;max-width:100%}
+.cards-art .cbody{fill:var(--surface);stroke:var(--line)}
+.cards-art .cchip{fill:var(--brass-soft);stroke:var(--brass)}
+.cards-art .cline{stroke:var(--brass);stroke-width:1}
+.cards-art .ctext{fill:var(--muted);font-family:var(--f-mono);font-size:10px}
+.cards-art .cmain{stroke:var(--accent);stroke-width:1.5}
+@media (max-width:720px){.mast{grid-template-columns:1fr}.cards-art{width:180px}}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:48px;margin-top:32px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;font-size:13.5px}
+.toc p{font-size:11.5px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;counter-reset:t}
+.toc a{display:block;padding:5px 10px;border-left:2px solid var(--line);color:var(--muted);text-decoration:none}
+.toc a:hover{color:var(--ink);border-left-color:var(--accent)}
+@media (max-width:960px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:20px}
+  .toc{position:static}
+  .toc ol{display:flex;overflow-x:auto;gap:6px;padding-bottom:6px}
+  .toc a{border:1px solid var(--line);border-radius:999px;white-space:nowrap;padding:4px 12px}
+}
+main{min-width:0;display:grid;gap:64px}
+section{min-width:0;display:grid;gap:18px;scroll-margin-top:24px}
+.sec-head{display:grid;gap:6px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.sec-head .kicker{font-size:12px;letter-spacing:.1em;color:var(--brass);font-weight:500}
+.sec-head h2{font-size:clamp(22px,2.6vw,28px)}
+.thesis{font-size:16.5px;max-width:68ch}
+h3{font-size:18px;margin-top:8px}
+.prose{max-width:70ch;display:grid;gap:10px}
+ul.list,ol.list{margin:0;padding-left:1.3em;display:grid;gap:8px;max-width:72ch}
+ul.list li::marker{color:var(--accent)}
+
+/* Tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-weight:500;color:var(--muted);font-size:12.5px;letter-spacing:.04em;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:500;white-space:nowrap}
+td.rec{background:var(--brass-soft)}
+.tag{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:999px;font-weight:500;margin-right:4px;white-space:nowrap}
+.tag.diff{background:var(--brass);color:var(--surface)}
+.tag.risk{background:var(--warn-soft);color:var(--warn)}
+.tag.ok{background:var(--good-soft);color:var(--good)}
+.tag.src{background:var(--accent-soft);color:var(--accent)}
+
+/* Callouts */
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:14px 18px;border-radius:0 8px 8px 0;max-width:76ch;display:grid;gap:6px}
+.note.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.note.diff{border-left-color:var(--brass);background:var(--brass-soft)}
+.note b.h{font-weight:700}
+
+/* Grids */
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.trio,.duo{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.panel h4{margin:0;font-size:15px;font-weight:700}
+.panel .lab{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.panel .ours{border-top:1px dashed var(--line);padding-top:10px;color:var(--ink)}
+.panel .ours::before{content:"我们要定：";color:var(--brass);font-weight:700}
+
+/* Steppers */
+.steps{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:0;overflow-x:auto;padding-bottom:4px;list-style:none;margin:0;padding-left:0;counter-reset:s}
+.steps li{position:relative;padding:14px 16px 14px 16px;border-top:3px solid var(--accent);background:var(--surface);border-right:1px solid var(--line);counter-increment:s;min-width:0}
+.steps li:last-child{border-right:0}
+.steps li::before{content:counter(s);font-family:var(--f-mono);font-size:12px;color:var(--accent);display:block;margin-bottom:4px}
+.steps li b{display:block;font-size:14px;margin-bottom:4px}
+.steps li span{font-size:13px;color:var(--muted);display:block;line-height:1.6}
+.steps .lock{display:inline-block;margin-top:6px;font-size:11px;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 6px}
+.steps .timer{display:inline-block;margin-top:6px;font-family:var(--f-mono);font-size:11.5px;color:var(--brass);border:1px solid var(--brass);border-radius:4px;padding:0 6px}
+.steps-wrap{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+
+/* Diagrams */
+.fig{border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow-x:auto;padding:12px}
+.fig svg{display:block;min-width:720px;width:100%;height:auto}
+figcaption{font-size:13px;color:var(--muted);margin-top:8px;max-width:76ch}
+svg .t{fill:var(--ink);font-family:var(--f-body)}
+svg .tm{fill:var(--muted);font-family:var(--f-body)}
+svg .tc{fill:var(--ink);font-family:var(--f-mono)}
+svg .tcm{fill:var(--muted);font-family:var(--f-mono)}
+svg .tb{fill:var(--brass);font-family:var(--f-body)}
+svg .tw{fill:var(--warn);font-family:var(--f-body)}
+svg .box{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
+svg .box-hot{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+svg .box-dash{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4}
+svg .box-warn{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.5}
+svg .band-warn{fill:var(--warn-soft)}
+svg .band-safe{fill:var(--good-soft)}
+svg .edge{stroke:var(--muted);stroke-width:1.3;fill:none}
+svg .edge-acc{stroke:var(--accent);stroke-width:1.6;fill:none}
+svg .life{stroke:var(--line);stroke-width:1.5;stroke-dasharray:3 5}
+svg .head{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.2}
+svg .ah{fill:var(--muted)}
+svg .ah-acc{fill:var(--accent)}
+
+/* Account mock */
+.acct{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:4px;max-width:420px}
+.acct .ttl{font-size:12px;color:var(--muted);margin-bottom:4px}
+.acct .row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.acct .row:first-of-type{border-top:0}
+.acct .ic{width:40px;height:40px;border-radius:10px}
+.acct .nm{font-weight:700;font-size:14.5px;line-height:1.3}
+.acct .sub{font-size:12.5px;color:var(--muted)}
+.acct .chev{color:var(--muted)}
+
+/* Checklist */
+.check{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-width:76ch}
+.check label{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;align-items:start;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.check input{margin-top:6px;accent-color:var(--accent)}
+.check input:checked + span{color:var(--muted);text-decoration:line-through}
+.sources{columns:2 320px;column-gap:32px;margin:0;padding-left:1.2em;font-size:14px}
+.sources li{break-inside:avoid;margin-bottom:6px}
+.foot{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="eyebrow">产品调研 · NFC 硬件卡钱包</div>
+      <h1>复刻 Tangem：硬件卡钱包产品要点</h1>
+      <p class="lede">按初始化、多卡备份、丢卡补卡、助记词、访问码、恢复出厂、多账户与多地址逐项拆解 Tangem 的做法，并给出我们自己产品要定的事和差异化方向。</p>
+      <div class="meta">
+        <span>截至 <b>2026-10-23</b></span>
+        <span>依据 <b>Tangem 官方帮助中心</b> + <b>开源 SDK（tangem-sdk-ios）</b></span>
+        <span><span class="tag diff">差异化</span> 标出我们可以做得比 Tangem 好的地方</span>
+      </div>
+    </div>
+    <svg class="cards-art" viewBox="0 0 230 170" role="img" aria-label="一套三张卡：一张主卡、两张备份卡">
+      <g transform="translate(40 8)"><rect class="cbody" x="0" y="0" width="160" height="100" rx="10"/><text class="ctext" x="12" y="88">BACKUP · 02</text></g>
+      <g transform="translate(22 30)"><rect class="cbody" x="0" y="0" width="160" height="100" rx="10"/><text class="ctext" x="12" y="88">BACKUP · 01</text></g>
+      <g transform="translate(4 54)"><rect class="cbody cmain" x="0" y="0" width="160" height="100" rx="10"/>
+        <rect class="cchip" x="16" y="28" width="34" height="26" rx="4"/>
+        <path class="cline" d="M16 37H50M16 45H50M33 28V54"/>
+        <text class="ctext" x="12" y="88">PRIMARY · 同一份私钥</text></g>
+    </svg>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="目录">
+      <p>目录</p>
+      <ol>
+        <li><a href="#summary">核心结论速览</a></li>
+        <li><a href="#basis">底层前提</a></li>
+        <li><a href="#init">初始化</a></li>
+        <li><a href="#backup">多卡备份</a></li>
+        <li><a href="#lost">丢卡与补卡</a></li>
+        <li><a href="#seed">助记词</a></li>
+        <li><a href="#code">访问码</a></li>
+        <li><a href="#reset">恢复出厂</a></li>
+        <li><a href="#wallets">钱包·账户·地址</a></li>
+        <li><a href="#curves">曲线与槽位</a></li>
+        <li><a href="#misc">易漏产品点</a></li>
+        <li><a href="#next">差异化与待确认</a></li>
+        <li><a href="#src">参考来源</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <!-- 速览 -->
+      <section id="summary">
+        <div class="sec-head"><span class="kicker">一页看完</span><h2>核心结论速览</h2></div>
+        <p class="thesis">复刻 Tangem 的核心是三件事：私钥只在芯片里生成和使用，多张卡之间安全复制同一份私钥，整个流程只靠 NFC 碰手机完成。我们最大的机会在“已开卡的套卡不能补卡”这个痛点。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>主题</th><th>Tangem 怎么做</th><th>我们的建议</th></tr></thead>
+          <tbody>
+            <tr><td>底层</td><td>EAL6+ 安全芯片；私钥在芯片内生成；固件不可升级；只靠 NFC；每次碰卡校验真伪</td><td class="rec">先定芯片与 COS、是否可升级、出厂 PKI</td></tr>
+            <tr><td>初始化</td><td>默认无助记词，可选生成或导入助记词；只有空卡能开卡</td><td class="rec">照做，并把“新卡已有钱包”当作骗局信号提示</td></tr>
+            <tr><td>多卡备份</td><td>1 主卡 + 1–2 备份卡，开卡时一次加完；卡间加密复制完整私钥；依赖在线厂商证书</td><td class="rec">断点续传、卡数上限可配置、证书服务高可用</td></tr>
+            <tr><td>丢卡补卡</td><td>丢一张用剩下的卡；<b>已完成的套卡不能补卡</b>，只能新开一套并转账</td><td class="rec"><span class="tag diff">差异化</span>支持事后补卡</td></tr>
+            <tr><td>助记词</td><td>可选；助记词和私钥在<b>手机上</b>生成，经 NFC 写入卡；不保存助记词</td><td class="rec">保持可选；加强手机侧防护；考虑 passphrase</td></tr>
+            <tr><td>访问码</td><td>至少 4 字符、每张卡单独存；忘记可用同套另一张卡重置（两次 15 秒等待）；可关闭恢复开关</td><td class="rec">恢复开关默认开；做故障注入测试；不说“绝对安全”</td></tr>
+            <tr><td>恢复出厂</td><td>需要访问码；先删私钥再解绑；只剩一张且忘码则卡报废；只有文字提示转走资产</td><td class="rec"><span class="tag diff">差异化</span>重置前查余额并拦截</td></tr>
+            <tr><td>一卡多钱包</td><td>一张卡只属于一个钱包（一套卡、一份私钥）；卡内多个槽位对应多条曲线</td><td class="rec">不做一卡多助记词；独立钱包用 passphrase 或 BIP-85</td></tr>
+            <tr><td>多账户</td><td>一个钱包最多 20 个活跃账户，靠 HD 派生序号区分，可命名、配图标</td><td class="rec">定好账户名称的存储与换机恢复</td></tr>
+            <tr><td>多地址</td><td>不同账户同一条链地址不同；EVM 每账户 1 个地址；UTXO 链可开动态地址</td><td class="rec">EVM 要多地址就多开账户；动态地址默认关</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <!-- 底层前提 -->
+      <section id="basis">
+        <div class="sec-head"><span class="kicker">01 · 先定下来</span><h2>底层前提</h2></div>
+        <p class="thesis">这三项决定了后面所有功能的边界，必须在芯片选型阶段就定。</p>
+        <div class="trio">
+          <div class="panel"><span class="lab">安全芯片</span><h4>EAL6+，固件不可升级</h4><p>与三星半导体合作的安全芯片，Common Criteria EAL6+；私钥由硬件随机数在芯片内生成；固件 2018 年 Kudelski、2023 年 Riscure 审计。</p><p class="ours">芯片与 COS 选型；固件要不要预留升级通道（不可升级更安全，但出 bug 只能召回）。</p></div>
+          <div class="panel"><span class="lab">交互方式</span><h4>只靠 NFC，没有屏幕</h4><p>卡只负责生成私钥和签名，App 是唯一界面；交易内容只能在手机上确认。</p><p class="ours">App 自身的安全就是产品安全的一半。</p></div>
+          <div class="panel"><span class="lab">真伪校验</span><h4>每次碰卡都验</h4><p>App 校验芯片和固件确为 Tangem 出厂（SDK：<code>AttestCardKeyCommand</code> + 在线 attestation）。</p><p class="ours">建立出厂 PKI：每张卡签发厂商证书，后台提供在线校验服务。</p></div>
+        </div>
+      </section>
+
+      <!-- 初始化 -->
+      <section id="init">
+        <div class="sec-head"><span class="kicker">02 · 开卡</span><h2>初始化</h2></div>
+        <p class="thesis">开卡有两种方式，默认推荐无助记词；流程固定为六步，且只有全新的空卡才能开卡。</p>
+        <div class="duo">
+          <div class="panel"><span class="lab">默认推荐</span><h4>无助记词</h4><p>私钥由卡的芯片生成，只存在于这一套卡里，任何地方都没有其他副本。全部丢卡则无法恢复。</p></div>
+          <div class="panel"><span class="lab">可选</span><h4>助记词模式</h4><p>App 生成 12 或 24 个词（只显示一次、不让截图、需重新输入确认），或导入 12/15/18/21/24 个词的已有助记词。详见<a href="#seed">助记词</a>一节。</p></div>
+        </div>
+        <div class="steps-wrap"><ol class="steps">
+          <li><b>生成或导入钱包</b><span>选择无助记词或助记词模式</span></li>
+          <li><b>加备份卡</b><span>1 到 2 张，必须是空卡</span></li>
+          <li><b>设访问码</b><span>整套先用同一个</span></li>
+          <li><b>逐张碰卡写入</b><span>界面显示卡号，防止碰错</span></li>
+          <li><b>生物识别</b><span>可选，Face ID / 指纹</span></li>
+          <li><b>默认添加币种</b><span>BTC 和 ETH</span></li>
+        </ol></div>
+        <div class="note warn"><b class="h">空卡检查也是反诈点</b><p>新卡一碰就应进入开卡流程。若显示“已有钱包”，要提示可能是二手卡或被篡改的卡，引导恢复出厂或联系客服，防“预装私钥”骗局。</p></div>
+      </section>
+
+      <!-- 备份 -->
+      <section id="backup">
+        <div class="sec-head"><span class="kicker">03 · 多卡密钥同步</span><h2>多卡备份</h2></div>
+        <p class="thesis">每套最多 1 张主卡加 1 到 2 张备份卡，<b>备份只能在开卡时一次加完</b>。每张卡存的都是完整私钥，卡之间用对方的 linking key 加密传输，并依赖后台签发的厂商证书。</p>
+        <figure class="fig" style="margin:0">
+          <svg viewBox="0 0 900 450" role="img" aria-label="备份协议时序：主卡、App、证书服务、备份卡之间的消息">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+              <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-acc" d="M0 0L10 5L0 10z"/></marker>
+            </defs>
+            <g font-size="13">
+              <rect class="head" x="60" y="18" width="120" height="36" rx="8"/><text class="t" x="120" y="41" text-anchor="middle" font-weight="700">主卡</text>
+              <rect class="head" x="280" y="18" width="120" height="36" rx="8"/><text class="t" x="340" y="41" text-anchor="middle" font-weight="700">手机 App</text>
+              <rect class="head" x="490" y="18" width="140" height="36" rx="8"/><text class="t" x="560" y="41" text-anchor="middle" font-weight="700">厂商证书服务</text>
+              <rect class="head" x="720" y="18" width="120" height="36" rx="8"/><text class="t" x="780" y="41" text-anchor="middle" font-weight="700">备份卡 ×1–2</text>
+            </g>
+            <line class="life" x1="120" y1="54" x2="120" y2="436"/><line class="life" x1="340" y1="54" x2="340" y2="436"/><line class="life" x1="560" y1="54" x2="560" y2="436"/><line class="life" x1="780" y1="54" x2="780" y2="436"/>
+            <g font-size="12">
+              <path class="edge" d="M120 96H336" marker-end="url(#ar)"/><text class="t" x="230" y="88" text-anchor="middle">① 给出主卡 linking key</text><text class="tcm" x="230" y="112" text-anchor="middle" font-size="10.5">StartPrimaryCardLinking</text>
+              <path class="edge" d="M780 146H344" marker-end="url(#ar)"/><text class="t" x="560" y="138" text-anchor="middle">② 给出备份卡 linking key</text><text class="tcm" x="660" y="162" text-anchor="middle" font-size="10.5">StartBackupCardLinking</text>
+              <path class="edge-acc" d="M340 196H556" marker-end="url(#ara)"/><text class="t" x="450" y="188" text-anchor="middle">③ 在线 attestation</text>
+              <path class="edge-acc" d="M560 226H344" marker-end="url(#ara)"/><text class="t" x="450" y="244" text-anchor="middle">④ 返回厂商签名 → 备份证书</text>
+              <path class="edge" d="M340 286H124" marker-end="url(#ar)"/><text class="t" x="230" y="278" text-anchor="middle">⑤ 校验证书，签 attestSignature</text><text class="tcm" x="230" y="302" text-anchor="middle" font-size="10.5">LinkBackupCards</text>
+              <path class="edge" d="M120 336H336" marker-end="url(#ar)"/><text class="t" x="230" y="328" text-anchor="middle">⑥ 用备份卡 key 加密私钥 + salt</text><text class="tcm" x="230" y="352" text-anchor="middle" font-size="10.5">ReadBackupData</text>
+              <path class="edge" d="M340 386H776" marker-end="url(#ar)"/><text class="t" x="560" y="378" text-anchor="middle">⑦ 写入加密私钥</text><text class="tcm" x="560" y="402" text-anchor="middle" font-size="10.5">WriteBackupData</text>
+              <text class="tb" x="450" y="430" text-anchor="middle">⑧ Finalize 主卡与每张备份卡：写入访问码，备份完成</text>
+            </g>
+          </svg>
+          <figcaption>来源：SDK <code>BackupService.swift</code>。③④ 依赖联网，只有拿到厂商证书的正规卡才能互为备份；App 在 ⑥ 之后本地暂存加密数据，用于断点续传。</figcaption>
+        </figure>
+        <ul class="list">
+          <li><b>断点续传</b>：状态依次为 <code>preparing</code> → <code>finalizingPrimaryCard</code> → <code>finalizingBackupCard(i)</code> → <code>finished</code>，中断后从断点继续（<code>hasIncompleteBackup</code>），否则会出现半套卡。</li>
+          <li><b>卡数上限要可配置</b>：固件 v8 及以上开了 <code>extendedBackup</code>，最多 3 张备份卡，说明 Tangem 也在放宽上限。</li>
+          <li><b>兼容性检查</b>：核对批次、曲线、是否允许 HD、是否允许导入私钥、固件版本；新旧两代卡不能放在同一套（错误码 41225）。</li>
+          <li><b>证书服务要高可用</b>：服务挂了用户就开不了卡，可考虑把证书提前写进卡里。</li>
+        </ul>
+      </section>
+
+      <!-- 丢卡 -->
+      <section id="lost">
+        <div class="sec-head"><span class="kicker">04 · 售后场景</span><h2>丢卡与补卡</h2></div>
+        <p class="thesis">Tangem 被吐槽最多的是<b>已完成的套卡不能补加新卡</b>，这是我们最明确的差异化机会。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>场景</th><th>Tangem 的处理</th></tr></thead>
+          <tbody>
+            <tr><td>丢一张卡</td><td>用剩下任意一张卡就能完整使用钱包</td></tr>
+            <tr><td>疑似被盗</td><td>引导新建钱包并把资产全部转走；访问码只能延缓攻击</td></tr>
+            <tr><td>想补一张新卡</td><td>无助记词：只能新开一套并转账；有助记词：买新卡导入原助记词</td></tr>
+            <tr><td>全部丢失</td><td>无助记词：彻底丢失；有助记词：导入新卡恢复</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note diff"><b class="h">改进方案：事后补卡</b><p>允许“用现有一张卡 + 访问码，给一张新空卡补做一次备份”，前提是协议里有 linking 和厂商证书机制。纯离线的卡无法真正撤销已丢的卡，所以至少要在 App 里提示风险，或引导用户换新私钥。</p></div>
+      </section>
+
+      <!-- 助记词 -->
+      <section id="seed">
+        <div class="sec-head"><span class="kicker">05 · 可选功能</span><h2>助记词</h2></div>
+        <p class="thesis">助记词模式下，<b>助记词和私钥都在手机上生成</b>，再通过 NFC 写进卡里，和无助记词模式正好相反。手机因此成了最薄弱的一环。</p>
+        <figure class="fig" style="margin:0">
+          <svg viewBox="0 0 900 330" role="img" aria-label="助记词模式：私钥在手机上生成，经 NFC 写入主卡，再卡间复制到备份卡">
+            <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+            <rect class="band-warn" x="10" y="14" width="880" height="160" rx="10"/>
+            <text class="tw" x="28" y="40" font-size="13" font-weight="700">手机内存：完整主私钥在这里出现过</text>
+            <rect class="band-safe" x="10" y="190" width="880" height="126" rx="10"/>
+            <text class="t" x="28" y="214" font-size="13" font-weight="700">卡芯片内</text>
+            <g font-size="13">
+              <rect class="box" x="30" y="62" width="170" height="64" rx="8"/><text class="t" x="115" y="88" text-anchor="middle" font-weight="700">① 系统随机数</text><text class="tcm" x="115" y="108" text-anchor="middle" font-size="11">128 / 256 位</text>
+              <rect class="box" x="236" y="62" width="180" height="64" rx="8"/><text class="t" x="326" y="88" text-anchor="middle" font-weight="700">② BIP39 助记词</text><text class="tm" x="326" y="108" text-anchor="middle" font-size="11.5">12 / 24 词，只显示一次</text>
+              <rect class="box-warn" x="452" y="62" width="230" height="64" rx="8"/><text class="t" x="567" y="88" text-anchor="middle" font-weight="700">③ seed → BIP32 主私钥</text><text class="tcm" x="567" y="108" text-anchor="middle" font-size="11">ExtendedPrivateKey + chain code</text>
+              <text class="tm" x="326" y="152" text-anchor="middle" font-size="11.5">用户抄写并重新输入确认</text>
+              <path class="edge" d="M200 94H232" marker-end="url(#ar2)"/><path class="edge" d="M416 94H448" marker-end="url(#ar2)"/>
+              <path class="edge" d="M567 126V246H586" marker-end="url(#ar2)"/>
+              <text class="t" x="578" y="164" font-size="12">④ NFC 写入</text><text class="tcm" x="578" y="182" font-size="10.5">CreateWallet</text>
+              <rect class="box-hot" x="590" y="222" width="130" height="50" rx="8"/><text class="t" x="655" y="252" text-anchor="middle" font-weight="700">主卡</text>
+              <rect class="box" x="760" y="222" width="110" height="50" rx="8"/><text class="t" x="815" y="252" text-anchor="middle" font-weight="700">备份卡</text>
+              <path class="edge" d="M720 247H756" marker-end="url(#ar2)"/><text class="tm" x="738" y="296" text-anchor="middle" font-size="11.5">⑤ 卡间加密复制</text>
+              <text class="tm" x="30" y="252" font-size="12">无助记词模式：私钥由这里的硬件随机数直接生成，</text>
+              <text class="tm" x="30" y="272" font-size="12">手机从头到尾接触不到。</text>
+            </g>
+          </svg>
+          <figcaption>来源：官方帮助中心与 SDK（<code>Crypto/BIP39</code>、<code>CreateWalletCommand</code>）。导入已有助记词跳过 ①。卡必须允许导入私钥（<code>isKeysImportAllowed</code>），每条曲线各导入一份；官方说 App 不保存助记词。</figcaption>
+        </figure>
+        <div class="tbl"><table>
+          <thead><tr><th></th><th>无助记词（默认）</th><th>助记词模式</th></tr></thead>
+          <tbody>
+            <tr><td>私钥在哪生成</td><td>卡的芯片，用芯片硬件随机数</td><td>手机</td></tr>
+            <tr><td>手机是否接触过私钥</td><td><span class="tag ok">从来没有</span></td><td><span class="tag risk">有</span>一段时间在手机内存里</td></tr>
+            <tr><td>私钥的副本</td><td>只在这套卡里</td><td>卡里 + 用户抄下的助记词</td></tr>
+            <tr><td>全部丢卡后</td><td>无法恢复</td><td>用助记词导入新卡即可恢复</td></tr>
+          </tbody>
+        </table></div>
+        <h3>复刻时要注意</h3>
+        <ul class="list">
+          <li><b>手机侧防护</b>：截屏防护、禁止复制到剪贴板、用完立即清内存，检测越狱或 root。</li>
+          <li><b>随机数</b>：可把卡的硬件随机数和手机的随机数混合使用，一边有问题时私钥仍然安全。</li>
+          <li><b>NFC 必须加密</b>：SDK 有会话加密（旧卡 legacy，固件 v8+ 安全通道），但导入私钥这一步具体用哪种尚未核实；我们的方案必须明确走加密通道。</li>
+          <li><b>passphrase 已有底层支持</b>：SDK 的 <code>generateSeed(with passphrase:)</code> 已能接收 passphrase，官方文档未提到 App 开放。<span class="tag diff">差异化</span>“隐藏钱包”成本不高。</li>
+          <li><b>是否允许导入</b>：可在出厂时关闭导入私钥，纯无助记词产品线从根上排除手机风险。</li>
+          <li><b>派生路径和曲线</b>：BIP32/44/84 路径与支持的曲线，决定能否与其他钱包互通恢复。</li>
+        </ul>
+      </section>
+
+      <!-- 访问码 -->
+      <section id="code">
+        <div class="sec-head"><span class="kicker">06 · 卡上 PIN</span><h2>访问码</h2></div>
+        <p class="thesis">访问码存在每张卡上。忘记时可用同一套里另一张卡确认重置；但如果所有卡都关了恢复开关，忘记就无法找回。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>规则</th><th>Tangem 的做法</th></tr></thead>
+          <tbody>
+            <tr><td>格式</td><td>至少 4 个字符，没有上限，任何字符都可以</td></tr>
+            <tr><td>存储</td><td>每张卡单独保存；开卡时整套设同一个码，之后可每张卡不同</td></tr>
+            <tr><td>防暴力破解</td><td>输错一定次数后锁定或延迟（官方未公开次数）</td></tr>
+            <tr><td>生物识别</td><td>App 侧用 Face ID / 指纹代替输入</td></tr>
+            <tr><td>恢复开关</td><td>每张卡可关闭“访问码恢复”；关闭后这张卡不能帮别的卡重置</td></tr>
+            <tr><td>只剩一张卡</td><td>其它卡都重置后，剩下这张的访问码无法再重置</td></tr>
+          </tbody>
+        </table></div>
+        <h3>忘记访问码的重置流程（一次只改一张卡）</h3>
+        <div class="steps-wrap"><ol class="steps">
+          <li><b>点“忘记访问码？”</b><span>输入新访问码并确认</span></li>
+          <li><b>碰要重置的卡</b><span>卡生成重置 token</span><em class="timer">等待 15s</em></li>
+          <li><b>碰同套另一张卡</b><span>校验同一套、不是同一张、开了恢复开关，然后签名</span><em class="timer">等待 15s</em></li>
+          <li><b>再碰要重置的卡</b><span>写入新访问码</span></li>
+        </ol></div>
+        <p class="prose" style="color:var(--muted);font-size:13.5px">来源：SDK <code>ResetPinService</code>；15 秒等待是故意加的延迟。</p>
+        <div class="note warn"><b class="h">安全案例：激光故障注入</b><p>Ledger Donjon 公开过一种激光故障注入攻击，能跳过旧访问码直接重置。攻击者需要拿到实体卡和价值约 25 万美元的实验室设备。复刻时要请第三方实验室专门测故障注入，产品话术里不要说“绝对安全”。</p></div>
+      </section>
+
+      <!-- 恢复出厂 -->
+      <section id="reset">
+        <div class="sec-head"><span class="kicker">07 · 唯一的重来出口</span><h2>恢复出厂</h2></div>
+        <p class="thesis">恢复出厂清掉私钥、公钥和多卡绑定，必须验证访问码。它是“加卡”“换套”“开卡出错后重来”的唯一出口。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>项目</th><th>Tangem 的做法</th></tr></thead>
+          <tbody>
+            <tr><td>入口</td><td>App → 钱包菜单 → 设备设置 → 碰卡并验证 → 恢复出厂设置</td></tr>
+            <tr><td>前提</td><td>必须先转走资产，重置后余额无法找回</td></tr>
+            <tr><td>验证</td><td>进入设置时验证一次；确认重置时再输访问码并碰卡</td></tr>
+            <tr><td>多卡钱包</td><td>重置一张后，App 提示继续重置同套其它卡</td></tr>
+            <tr><td>重置后</td><td>变成空卡，可重新开卡或当别的钱包的备份卡</td></tr>
+            <tr><td>忘记访问码</td><td>先用同套另一张卡改掉访问码，再重置</td></tr>
+            <tr><td>最危险</td><td><span class="tag risk">报废</span>只剩一张卡又忘了它的访问码</td></tr>
+            <tr><td>常见场景</td><td>第二张卡误开成独立钱包；想从 2 张加到 3 张；备份时碰到非空卡</td></tr>
+          </tbody>
+        </table></div>
+        <h3>SDK 的四步擦除（每一步都要访问码）</h3>
+        <div class="steps-wrap"><ol class="steps">
+          <li><b>PurgeWallet</b><span>逐个删除钱包槽位（每条曲线一个）；永久钱包拒绝删除</span><em class="lock">需访问码</em></li>
+          <li><b>PurgeMasterSecret</b><span>删除主密钥（固件 v8+）</span><em class="lock">需访问码</em></li>
+          <li><b>ResetBackup</b><span>解除多卡绑定；卡上仍有备份过的钱包时会拒绝</span><em class="lock">需访问码</em></li>
+          <li><b>ResetAccessTokens</b><span>清除安全通道令牌（固件 v8+）</span><em class="lock">需访问码</em></li>
+        </ol></div>
+        <p class="prose" style="color:var(--muted);font-size:13.5px">先删私钥再解绑，避免出现“私钥还在、但已脱离套卡”的卡。来源：SDK <code>ResetToFactorySettingsTask</code>。</p>
+        <h3>产品设计点</h3>
+        <ul class="list">
+          <li><span class="tag diff">差异化</span>重置前查链上余额，不为零就强提醒或拦截；Tangem 只有文字提示。</li>
+          <li>重置一张后显示“本套还剩 N 张未重置”，并提示“最后一张千万别忘访问码”。</li>
+          <li>每一步显示卡号，防止误重置想保留的卡。</li>
+          <li>芯片内删除必须真正擦除，且要么全部完成、要么全部不做，写进芯片验收标准。</li>
+          <li>可考虑加 15 秒等待，防误操作和社会工程诱导。</li>
+          <li>零售卡不开“永久钱包”，只给机构或定制卡。</li>
+        </ul>
+      </section>
+
+      <!-- 钱包账户地址 -->
+      <section id="wallets">
+        <div class="sec-head"><span class="kicker">08 · 数据模型</span><h2>一卡多钱包、多账户与多地址</h2></div>
+        <p class="thesis">一张卡只属于<b>一个钱包</b>（一套卡、一份私钥）。钱包里最多 20 个账户，每个账户在每条链上有自己的地址；想要两个互相独立的钱包，就要两套卡。</p>
+        <figure class="fig" style="margin:0">
+          <svg viewBox="0 0 760 436" role="img" aria-label="钱包到账户到链到地址的层级">
+            <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+            <text class="t" x="24" y="32" font-size="15" font-weight="700">一套卡一个钱包，账户和地址都从同一份私钥派生</text>
+            <g class="edge">
+              <path d="M400 112V132"/><path d="M400 132H200V150" marker-end="url(#ar3)"/><path d="M400 132V150" marker-end="url(#ar3)"/><path d="M400 132H600V150" marker-end="url(#ar3)"/>
+              <path d="M200 212V232"/><path d="M200 232H114V250" marker-end="url(#ar3)"/><path d="M200 232H350V250" marker-end="url(#ar3)"/><path d="M600 212V250" marker-end="url(#ar3)"/>
+              <path d="M114 300V338" marker-end="url(#ar3)"/><path d="M350 300V338" marker-end="url(#ar3)"/><path d="M600 300V338" marker-end="url(#ar3)"/>
+            </g>
+            <g font-size="13">
+              <rect class="box" x="250" y="52" width="300" height="60" rx="8"/><text class="t" x="400" y="76" text-anchor="middle" font-weight="700">钱包 = 一套卡</text><text class="tm" x="400" y="96" text-anchor="middle" font-size="11.5">主卡 + 1–2 张备份卡，同一份私钥</text>
+              <rect class="box" x="100" y="152" width="200" height="60" rx="8"/><text class="t" x="200" y="176" text-anchor="middle" font-weight="700">主账户</text><text class="tm" x="200" y="196" text-anchor="middle" font-size="11.5">自动生成，不能归档</text>
+              <rect class="box-dash" x="320" y="152" width="160" height="60" rx="8"/><text class="t" x="400" y="176" text-anchor="middle" font-weight="700">账户 3 … 20</text><text class="tm" x="400" y="196" text-anchor="middle" font-size="11.5">最多 20 个活跃账户</text>
+              <rect class="box" x="500" y="152" width="200" height="60" rx="8"/><text class="t" x="600" y="176" text-anchor="middle" font-weight="700">账户 2</text><text class="tm" x="600" y="196" text-anchor="middle" font-size="11.5">可命名，可归档后恢复</text>
+              <rect class="box" x="24" y="252" width="180" height="48" rx="8"/><text class="t" x="114" y="280" text-anchor="middle">以太坊（EVM）</text>
+              <rect class="box" x="220" y="252" width="260" height="48" rx="8"/><text class="t" x="350" y="280" text-anchor="middle">比特币（UTXO）</text>
+              <rect class="box" x="500" y="252" width="200" height="48" rx="8"/><text class="t" x="600" y="280" text-anchor="middle">以太坊（EVM）</text>
+              <rect class="box-hot" x="24" y="340" width="180" height="56" rx="8"/><text class="t" x="114" y="364" text-anchor="middle" font-weight="700">1 个地址</text><text class="tcm" x="114" y="382" text-anchor="middle" font-size="11">m/44'/60'/0'/0/0</text>
+              <rect class="box" x="220" y="340" width="260" height="72" rx="8"/><text class="t" x="350" y="364" text-anchor="middle" font-weight="700">多个地址（开启动态地址）</text><text class="tcm" x="350" y="382" text-anchor="middle" font-size="11">收款 m/84'/0'/0'/0/n</text><text class="tcm" x="350" y="398" text-anchor="middle" font-size="11">找零 m/84'/0'/0'/1/n</text>
+              <rect class="box-hot" x="500" y="340" width="200" height="56" rx="8"/><text class="t" x="600" y="364" text-anchor="middle" font-weight="700">另一个地址</text><text class="tcm" x="600" y="382" text-anchor="middle" font-size="11">m/44'/60'/0'/0/1</text>
+            </g>
+          </svg>
+          <figcaption>同一条以太坊链上，主账户和账户 2 是两个不同的地址（高亮）；BTC 等 UTXO 链开启动态地址后，一个账户里也会有多个地址。</figcaption>
+        </figure>
+
+        <h3>“钱包”的三层含义</h3>
+        <div class="trio">
+          <div class="panel"><span class="lab">用户看到的</span><h4>钱包 = 一套卡</h4><p>一张卡不能同时属于两套，也不能放两份不同的助记词；要加入别的套卡必须先恢复出厂。</p></div>
+          <div class="panel"><span class="lab">卡内部的</span><h4>槽位 = 一条曲线</h4><p>为支持更多链而设，用户感知不到。详见<a href="#curves">曲线与槽位</a>。</p></div>
+          <div class="panel"><span class="lab">派生出来的</span><h4>账户和地址 = HD 派生</h4><p>一个槽位按 BIP32/44/84 路径能派生无数个地址，不额外占槽位。</p></div>
+        </div>
+
+        <h3>多账户（Multi-Accounts）</h3>
+        <div class="duo">
+          <ul class="list">
+            <li>一个钱包最多 <b>20 个活跃账户</b>，可命名、配图标和颜色，地址与余额各自独立。</li>
+            <li>主账户自动生成、不能归档；其它账户可归档后恢复；账户间可互转，都能用兑换、WalletConnect、质押。</li>
+            <li>EVM 改路径最后一位 <code>m/44'/60'/0'/0/n</code>；非 EVM 改 account 位 <code>m/84'/0'/n'/0/0</code>。</li>
+            <li><span class="tag risk">注意</span>所有账户共用一份私钥，风险不隔离。</li>
+          </ul>
+          <div>
+            <div class="acct" role="img" aria-label="示例：用户截图中的账户页">
+              <div class="ttl">账户（还原自用户截图，余额已隐去）</div>
+              <div class="row"><span class="ic" style="background:var(--accent)"></span><div><div class="nm">CC- CUSD 以太坊</div><div class="sub">11 代币</div></div><span class="chev">›</span></div>
+              <div class="row"><span class="ic" style="background:var(--brass)"></span><div><div class="nm">Benny-1</div><div class="sub">15 代币</div></div><span class="chev">›</span></div>
+              <div class="row"><span class="ic" style="background:var(--warn)"></span><div><div class="nm">rain-1</div><div class="sub">15 代币</div></div><span class="chev">›</span></div>
+              <div class="row"><span class="ic" style="background:var(--warn);opacity:.7"></span><div><div class="nm">visa-rain</div><div class="sub">2 代币</div></div><span class="chev">›</span></div>
+            </div>
+            <p style="font-size:13px;color:var(--muted);margin-top:8px">这 4 个账户属于同一个钱包，是同一份私钥的不同派生序号，在以太坊上就是 4 个不同的地址。</p>
+          </div>
+        </div>
+
+        <h3>同一条链上的多个地址</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>链的类型</th><th>一个账户里的地址</th></tr></thead>
+          <tbody>
+            <tr><td>EVM（ETH、BSC、Polygon 等）</td><td>固定一个地址；想要多个地址就多开账户</td></tr>
+            <tr><td>UTXO（BTC、BCH、LTC、DOGE、DASH、RVN）</td><td>默认一个；开启“动态地址”后每次收款换新地址，付款时自动生成找零地址</td></tr>
+            <tr><td>BTC 地址格式</td><td>另外提供 SegWit（默认）和 Legacy 两种格式</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li><b>动态地址规则</b>：默认关闭，按账户、按链分别开启；余额汇总同一路径下所有地址；BTC 只支持 <code>bc1</code> 开头的地址；关闭时如钱分散在多个地址，App 提示先归集。</li>
+          <li><b>EVM 为什么只给一个地址</b>：账户模型下余额和授权绑在地址上，多地址会导致余额分散、Gas 要分别准备，所以交给多账户解决。</li>
+          <li><b>动态地址有成本</b>：每次收款后要扫描新地址余额，归集要多付手续费，所以默认关闭，只给注重隐私的用户开。</li>
+          <li><b>展示</b>：收款页只显示当前地址，旧地址进地址列表；标出“默认 / Legacy / 动态地址”，避免用户问“地址怎么变了”。</li>
+        </ul>
+
+        <h3>产品怎么定</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>需求</th><th>建议做法</th></tr></thead>
+          <tbody>
+            <tr><td>支持多链</td><td>按要支持的链规划曲线槽位数量，芯片选型时就定</td></tr>
+            <tr><td>把资金分开管理</td><td>用 HD 多账户，成本最低，备份卡和助记词只需一份</td></tr>
+            <tr><td>真正独立的钱包</td><td>再开一套卡；或 <span class="tag diff">差异化</span>passphrase 隐藏钱包；或参考 BIP-85 一张卡派生多个子钱包（固件 v8 的 <code>masterSecret</code> 注释写了 BIP-85，但未见官方文档提到）</td></tr>
+            <tr><td>一张卡导入多份助记词</td><td>不建议：备份、访问码、恢复出厂都要按钱包单独处理，复杂度成倍上升</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li>账户名称、图标、颜色存在 App 本地还是云端？决定了换手机后这些名字还在不在。</li>
+          <li>重装 App 后要扫描各派生序号的链上活动找回账户和地址，gap limit 要自己定（业内常见 20）。</li>
+          <li>账户间互转会把地址在链上关联起来，文案可以提示。</li>
+          <li>做 passphrase 或 BIP-85 时，恢复出厂要提示隐藏钱包里的资产也会丢失。</li>
+        </ul>
+      </section>
+
+      <!-- 曲线 -->
+      <section id="curves">
+        <div class="sec-head"><span class="kicker">09 · 芯片能力</span><h2>曲线与钱包槽位</h2></div>
+        <p class="thesis">曲线指<b>椭圆曲线</b>，是私钥和签名依赖的数学算法。同一个私钥放到不同曲线上，算出的公钥和地址完全不同。<b>一条曲线占一个槽位</b>，同一曲线下的链、账户、地址都靠 HD 派生，不额外占槽位。</p>
+        <div class="note"><b class="h">打个比方</b><p>私钥是钥匙胚，曲线是锁的规格。BTC 和 ETH 用同一种规格（secp256k1），共用一个槽位；Solana 用另一种（ed25519），要单独占一个。</p></div>
+        <div class="tbl"><table>
+          <thead><tr><th>曲线（SDK <code>EllipticCurve</code>）</th><th>代表链（按行业常识补充）</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">secp256k1</td><td>BTC、ETH 及所有 EVM 链、LTC、DOGE、TRON</td></tr>
+            <tr><td class="mono">ed25519 / ed25519_slip0010</td><td>Solana、TON、Aptos、Sui、Cardano 等（slip0010 是支持 HD 派生的版本）</td></tr>
+            <tr><td class="mono">secp256r1</td><td>部分链和通用签名场景（如 Passkey）</td></tr>
+            <tr><td class="mono">bls12381_G2 系列</td><td>以太坊 PoS 验证者质押、Chia</td></tr>
+            <tr><td class="mono">bip0340</td><td>BTC Taproot（Schnorr 签名）</td></tr>
+          </tbody>
+        </table></div>
+        <div class="trio">
+          <div class="panel"><span class="lab">maxWalletsCount</span><h4>出厂配置，不是固定值</h4><p>每张卡开卡时读出。SDK 测试数据里一张卡是 <b>36</b>（支持 3 条曲线），一份出厂模板是 <b>10</b>；都不代表零售卡，官方未公布。</p></div>
+          <div class="panel"><span class="lab">够不够用</span><h4>10 个槽位已够</h4><p>支持 5–6 条曲线就能覆盖上千条链，因为同一曲线下的一切都靠 HD 派生。</p></div>
+          <div class="panel"><span class="lab">securityDelay</span><h4>敏感命令前强制等待</h4><p>测试数据里是 3000 毫秒，和防暴力破解、恢复出厂的等待设计相关，可列为出厂参数。</p></div>
+        </div>
+        <div class="note diff"><b class="h">我们要定的</b><p>曲线由要支持的链决定：至少 secp256k1 + ed25519；Taproot 加 bip0340；质押加 BLS。受芯片和 COS 限制，选型时就定。槽位按“曲线数 + 余量”定，因为固件出厂后不能升级，新曲线没法后加。</p></div>
+      </section>
+
+      <!-- 易漏 -->
+      <section id="misc">
+        <div class="sec-head"><span class="kicker">10 · 体验与信任</span><h2>其它容易漏掉的产品点</h2></div>
+        <div class="duo">
+          <div class="panel"><h4>隐私与信任背书</h4><p>不要求注册账号、不收集个人信息，交易直接发到链上节点、不经过自己的服务器，App 开源。我们要决定做到哪一步。</p></div>
+          <div class="panel"><h4>多种外形</h4><p>卡片和戒指（Tangem Ring）可以混在一套里，所以协议要和外形无关。</p></div>
+          <div class="panel"><h4>NFC 体验</h4><p>碰卡失败、碰错卡、iPhone 上找不到 NFC 位置都要有界面指引；卡号校验贯穿整个流程。</p></div>
+          <div class="panel"><h4>反钓鱼</h4><p>常见攻击是假客服、假“助记词检查器”、预装私钥的二手卡。App 里要提示，卡要有防拆包装。</p></div>
+          <div class="panel"><h4>备份中断</h4><p>Tangem 帮助中心让用户彻底关掉 App 再重新碰卡；我们应做成自动从断点继续。</p></div>
+          <div class="panel"><h4>报错文案要清楚</h4><p><code>41301</code> 碰了同一张或未关联的卡；<code>41225</code> 新旧两代卡不能互为备份；“无法用此卡重置”= 该卡关了恢复开关；“该卡已创建钱包”= 需先恢复出厂。</p></div>
+        </div>
+      </section>
+
+      <!-- 差异化 & 待确认 -->
+      <section id="next">
+        <div class="sec-head"><span class="kicker">11 · 下一步</span><h2>差异化方向与待确认事项</h2></div>
+        <div class="duo">
+          <div class="panel">
+            <h4>差异化方向</h4>
+            <ol class="list">
+              <li>支持安全的事后补卡，同时消除大部分“为加卡而重置”的场景。</li>
+              <li>固件预留升级通道，或至少把备份卡数量设计成可扩展。</li>
+              <li>访问码恢复开关默认开，开卡时讲清楚风险。</li>
+              <li>恢复出厂前检查链上余额并拦截。</li>
+              <li>可选的 passphrase 隐藏钱包。</li>
+            </ol>
+          </div>
+          <div class="panel">
+            <h4>待确认事项 <span style="font-weight:400;font-size:12px;color:var(--muted)">（勾选状态仅保存在你的浏览器）</span></h4>
+            <ul class="check" id="todo">
+              <li><label><input type="checkbox" id="t1"><span>访问码输错几次锁卡、锁多久（官方未公开）</span></label></li>
+              <li><label><input type="checkbox" id="t2"><span>备份加密的具体算法和曲线（读 SDK 的 TLV 定义或卡片命令文档）</span></label></li>
+              <li><label><input type="checkbox" id="t3"><span>导入私钥（<code>CreateWallet</code> 带私钥）时 NFC 用哪种加密通道</span></label></li>
+              <li><label><input type="checkbox" id="t4"><span>零售卡实际的 <code>maxWalletsCount</code>、支持的曲线和 <code>securityDelay</code>（真卡扫描读取）</span></label></li>
+              <li><label><input type="checkbox" id="t5"><span>恢复出厂确认页有几个勾选项（需真机截图）</span></label></li>
+              <li><label><input type="checkbox" id="t6"><span>多账户名称、图标存在哪里，换手机后是否保留</span></label></li>
+              <li><label><input type="checkbox" id="t7"><span>Tangem 是否把 v8 的 <code>masterSecret</code>（BIP-85）做成了用户功能</span></label></li>
+              <li><label><input type="checkbox" id="t8"><span>动态地址和地址发现的 gap limit 取值</span></label></li>
+              <li><label><input type="checkbox" id="t9"><span>芯片和 COS 选型：支持哪些曲线、多少个槽位</span></label></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 来源 -->
+      <section id="src">
+        <div class="sec-head"><span class="kicker">依据</span><h2>参考来源</h2></div>
+        <ol class="sources">
+          <li><a href="https://tangem.com/zh-Hans/help-center/introduction-to-tangem-wallet/tangem-and-security/" target="_blank" rel="noopener">Tangem &amp; Security（帮助中心）</a></li>
+          <li><a href="https://tangem.com/zh-Hans/help-center/getting-started-with-hardware-wallet/how-to-set-up-with-a-seed-phrase/" target="_blank" rel="noopener">How to Set Up With a Seed Phrase</a></li>
+          <li><a href="https://tangem.com/zh-Hans/help-center/troubleshooting/access-code-issues/" target="_blank" rel="noopener">Access Code Issues（帮助中心）</a></li>
+          <li><a href="https://tangem.com/en-GB/blog/post/how-to-reset-your-password-on-tangem-wallet/" target="_blank" rel="noopener">How to Reset Forgotten Access Code</a></li>
+          <li><a href="https://tangem.com/zh-Hans/help-center/app-functionality/wallet-reset/" target="_blank" rel="noopener">Wallet Reset（帮助中心）</a></li>
+          <li><a href="https://tangem.com/zh-Hans/help-center/troubleshooting/wallet-creation-issues/" target="_blank" rel="noopener">Wallet Creation Issues（帮助中心）</a></li>
+          <li><a href="https://tangem.com/en/learning-hub/post/what-to-do-lost-hardware-wallet/" target="_blank" rel="noopener">Lost Your Hardware Wallet?</a></li>
+          <li><a href="https://tangem.com/zh-Hans/help-center/app-functionality/multi-accounts/" target="_blank" rel="noopener">Multi-Accounts（帮助中心）</a></li>
+          <li><a href="https://tangem.com/en-GB/blog/post/multi-accounts/" target="_blank" rel="noopener">Create Multiple Accounts in Your Tangem Wallet</a></li>
+          <li><a href="https://tangem.com/zh-Hans/help-center/fund-transfers/dynamic-addresses/" target="_blank" rel="noopener">Dynamic Addresses（帮助中心）</a></li>
+          <li><a href="https://tangem.com/uk/blog/post/dynamic-address-utxo/" target="_blank" rel="noopener">UTXO Dynamic Addresses Now In Tangem</a></li>
+          <li><a href="https://tangem.com/en-GB/blog/post/bitcoin-address/" target="_blank" rel="noopener">How Bitcoin Addresses Work: Taproot, SegWit, Legacy</a></li>
+          <li><a href="https://github.com/tangem/tangem-sdk-ios" target="_blank" rel="noopener">tangem-sdk-ios（GitHub）</a>：Backup、ResetCode、Wallet、Card、BIP39</li>
+          <li><a href="https://blog.gridinsoft.com/tangem-wallet-laser-attack/" target="_blank" rel="noopener">Tangem 激光攻击报道（Gridinsoft）</a></li>
+          <li><a href="https://stronghold.co/learn/cold-wallet-best-practices-protecting-your-shx-with-tangem" target="_blank" rel="noopener">Cold Wallet Best Practices with Tangem（Stronghold）</a></li>
+        </ol>
+        <p class="foot">SDK 中的测试数据（如 maxWalletsCount 36 / 10、securityDelay 3000 ms）只说明配置项的含义，不代表零售卡的实际取值。表中“代表链”一列为行业常识补充，非 SDK 原文。</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  var key='tangem-report-todo';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(e){state={}}
+  var boxes=document.querySelectorAll('#todo input[type=checkbox]');
+  boxes.forEach(function(b){
+    if(state[b.id])b.checked=true;
+    b.addEventListener('change',function(){
+      state[b.id]=b.checked;
+      try{localStorage.setItem(key,JSON.stringify(state))}catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>
