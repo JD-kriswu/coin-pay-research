@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>复刻 Tangem 产品要点</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,7 +176,7 @@ html{scroll-behavior:smooth}
       <h1>复刻 Tangem：硬件卡钱包产品要点</h1>
       <p class="lede">按初始化、多卡备份、丢卡补卡、助记词、访问码、恢复出厂、多账户与多地址逐项拆解 Tangem 的做法，并给出我们自己产品要定的事和差异化方向。</p>
       <div class="meta">
-        <span>截至 <b>2026-10-23</b></span>
+        <span>截至 <b>2026-10-27</b></span>
         <span>依据 <b>Tangem 官方帮助中心</b> + <b>开源 SDK（tangem-sdk-ios）</b></span>
         <span><span class="tag diff">差异化</span> 标出我们可以做得比 Tangem 好的地方</span>
       </div>
@@ -206,6 +206,7 @@ html{scroll-behavior:smooth}
         <li><a href="#wallets">钱包·账户·地址</a></li>
         <li><a href="#curves">曲线与槽位</a></li>
         <li><a href="#misc">易漏产品点</a></li>
+        <li><a href="#patent">专利风险</a></li>
         <li><a href="#next">差异化与待确认</a></li>
         <li><a href="#src">参考来源</a></li>
       </ol>
@@ -224,11 +225,12 @@ html{scroll-behavior:smooth}
             <tr><td>多卡备份</td><td>1 主卡 + 1–2 备份卡，开卡时一次加完；卡间加密复制完整私钥；依赖在线厂商证书</td><td class="rec">断点续传、卡数上限可配置、证书服务高可用</td></tr>
             <tr><td>丢卡补卡</td><td>丢一张用剩下的卡；<b>已完成的套卡不能补卡</b>，只能新开一套并转账</td><td class="rec"><span class="tag diff">差异化</span>支持事后补卡</td></tr>
             <tr><td>助记词</td><td>可选；助记词和私钥在<b>手机上</b>生成，经 NFC 写入卡；不保存助记词</td><td class="rec">保持可选；加强手机侧防护；考虑 passphrase</td></tr>
-            <tr><td>访问码</td><td>至少 4 字符、每张卡单独存；忘记可用同套另一张卡重置（两次 15 秒等待）；可关闭恢复开关</td><td class="rec">恢复开关默认开；做故障注入测试；不说“绝对安全”</td></tr>
+            <tr><td>访问码</td><td>至少 4 字符、每张卡单独存；忘记可用同套另一张卡重置（两次 15 秒等待，不需要任何访问码，所以只防单卡丢失）；可关闭恢复开关</td><td class="rec">恢复开关默认开；做故障注入测试；不说“绝对安全”</td></tr>
             <tr><td>恢复出厂</td><td>需要访问码；先删私钥再解绑；只剩一张且忘码则卡报废；只有文字提示转走资产</td><td class="rec"><span class="tag diff">差异化</span>重置前查余额并拦截</td></tr>
             <tr><td>一卡多钱包</td><td>一张卡只属于一个钱包（一套卡、一份私钥）；卡内多个槽位对应多条曲线</td><td class="rec">不做一卡多助记词；独立钱包用 passphrase 或 BIP-85</td></tr>
             <tr><td>多账户</td><td>一个钱包最多 20 个活跃账户，靠 HD 派生序号区分，可命名、配图标</td><td class="rec">定好账户名称的存储与换机恢复</td></tr>
             <tr><td>多地址</td><td>不同账户同一条链地址不同；EVM 每账户 1 个地址；UTXO 链可开动态地址</td><td class="rec">EVM 要多地址就多开账户；动态地址默认关</td></tr>
+            <tr><td>专利</td><td>3 项美国专利；<b>US 12,212,665 几乎覆盖卡间备份协议</b></td><td class="rec"><span class="tag risk">风险</span>写代码前先做专利评估，“事后补卡”同样受影响</td></tr>
           </tbody>
         </table></div>
       </section>
@@ -266,38 +268,145 @@ html{scroll-behavior:smooth}
       <!-- 备份 -->
       <section id="backup">
         <div class="sec-head"><span class="kicker">03 · 多卡密钥同步</span><h2>多卡备份</h2></div>
-        <p class="thesis">每套最多 1 张主卡加 1 到 2 张备份卡，<b>备份只能在开卡时一次加完</b>。每张卡存的都是完整私钥，卡之间用对方的 linking key 加密传输，并依赖后台签发的厂商证书。</p>
-        <figure class="fig" style="margin:0">
-          <svg viewBox="0 0 900 450" role="img" aria-label="备份协议时序：主卡、App、证书服务、备份卡之间的消息">
-            <defs>
-              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
-              <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-acc" d="M0 0L10 5L0 10z"/></marker>
-            </defs>
-            <g font-size="13">
-              <rect class="head" x="60" y="18" width="120" height="36" rx="8"/><text class="t" x="120" y="41" text-anchor="middle" font-weight="700">主卡</text>
-              <rect class="head" x="280" y="18" width="120" height="36" rx="8"/><text class="t" x="340" y="41" text-anchor="middle" font-weight="700">手机 App</text>
-              <rect class="head" x="490" y="18" width="140" height="36" rx="8"/><text class="t" x="560" y="41" text-anchor="middle" font-weight="700">厂商证书服务</text>
-              <rect class="head" x="720" y="18" width="120" height="36" rx="8"/><text class="t" x="780" y="41" text-anchor="middle" font-weight="700">备份卡 ×1–2</text>
-            </g>
-            <line class="life" x1="120" y1="54" x2="120" y2="436"/><line class="life" x1="340" y1="54" x2="340" y2="436"/><line class="life" x1="560" y1="54" x2="560" y2="436"/><line class="life" x1="780" y1="54" x2="780" y2="436"/>
-            <g font-size="12">
-              <path class="edge" d="M120 96H336" marker-end="url(#ar)"/><text class="t" x="230" y="88" text-anchor="middle">① 给出主卡 linking key</text><text class="tcm" x="230" y="112" text-anchor="middle" font-size="10.5">StartPrimaryCardLinking</text>
-              <path class="edge" d="M780 146H344" marker-end="url(#ar)"/><text class="t" x="560" y="138" text-anchor="middle">② 给出备份卡 linking key</text><text class="tcm" x="660" y="162" text-anchor="middle" font-size="10.5">StartBackupCardLinking</text>
-              <path class="edge-acc" d="M340 196H556" marker-end="url(#ara)"/><text class="t" x="450" y="188" text-anchor="middle">③ 在线 attestation</text>
-              <path class="edge-acc" d="M560 226H344" marker-end="url(#ara)"/><text class="t" x="450" y="244" text-anchor="middle">④ 返回厂商签名 → 备份证书</text>
-              <path class="edge" d="M340 286H124" marker-end="url(#ar)"/><text class="t" x="230" y="278" text-anchor="middle">⑤ 校验证书，签 attestSignature</text><text class="tcm" x="230" y="302" text-anchor="middle" font-size="10.5">LinkBackupCards</text>
-              <path class="edge" d="M120 336H336" marker-end="url(#ar)"/><text class="t" x="230" y="328" text-anchor="middle">⑥ 用备份卡 key 加密私钥 + salt</text><text class="tcm" x="230" y="352" text-anchor="middle" font-size="10.5">ReadBackupData</text>
-              <path class="edge" d="M340 386H776" marker-end="url(#ar)"/><text class="t" x="560" y="378" text-anchor="middle">⑦ 写入加密私钥</text><text class="tcm" x="560" y="402" text-anchor="middle" font-size="10.5">WriteBackupData</text>
-              <text class="tb" x="450" y="430" text-anchor="middle">⑧ Finalize 主卡与每张备份卡：写入访问码，备份完成</text>
-            </g>
-          </svg>
-          <figcaption>来源：SDK <code>BackupService.swift</code>。③④ 依赖联网，只有拿到厂商证书的正规卡才能互为备份；App 在 ⑥ 之后本地暂存加密数据，用于断点续传。</figcaption>
-        </figure>
+        <p class="thesis">每套最多 1 张主卡加 1 到 2 张备份卡，<b>备份只能一次加完</b>（开卡时跳过的，只要还没备份过，以后可在设置里补做一次）。每张卡存的都是完整私钥，卡之间用对方的 linking key 加密传输，并依赖后台签发的厂商证书。</p>
         <ul class="list">
           <li><b>断点续传</b>：状态依次为 <code>preparing</code> → <code>finalizingPrimaryCard</code> → <code>finalizingBackupCard(i)</code> → <code>finished</code>，中断后从断点继续（<code>hasIncompleteBackup</code>），否则会出现半套卡。</li>
           <li><b>卡数上限要可配置</b>：固件 v8 及以上开了 <code>extendedBackup</code>，最多 3 张备份卡，说明 Tangem 也在放宽上限。</li>
           <li><b>兼容性检查</b>：核对批次、曲线、是否允许 HD、是否允许导入私钥、固件版本；新旧两代卡不能放在同一套（错误码 41225）。</li>
           <li><b>证书服务要高可用</b>：服务挂了用户就开不了卡，可考虑把证书提前写进卡里。</li>
+        </ul>
+
+        <h3>3 卡卡组初始化全过程</h3>
+        <p class="thesis">一套 3 卡从拆盒到能用约<b>贴 8 次卡</b>，第一张扫的就是主卡。卡组在<b>第 ⑦ 步贴主卡时就锁定</b>，比用户看到“备份完成”更早。</p>
+        <figure class="fig" style="margin:0;padding:0;overflow:hidden">
+          <img src="assets/tangem-3card-onboarding.png" alt="三张卡，从拆盒到钱包可用：8 次贴卡、手机作为中转站的备份原理、为什么安全" width="1448" height="1086" loading="lazy" style="display:block;width:100%;height:auto">
+        </figure>
+        <p class="tm" style="color:var(--muted);font-size:13px;margin-top:-8px">示意图 ①–⑧ 是 8 次贴卡，对应下方时序图的 ①–⑤ 和 ⑦–⑨；时序图的 ⑥ 设置访问码不用贴卡。时序图补充每一步的命令和卡片状态。</p>
+        <figure class="fig" style="margin:0">
+          <svg viewBox="0 0 900 640" role="img" aria-label="3 卡卡组初始化时序：卡 A、手机 App、Tangem 服务器、卡 B、卡 C 之间的 9 步，第 7 步起卡组锁定">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+              <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-acc" d="M0 0L10 5L0 10z"/></marker>
+            </defs>
+            <rect class="band-warn" x="8" y="402" width="884" height="190" rx="8"/>
+            <text class="tw" x="884" y="420" text-anchor="end" font-size="12" font-weight="700">卡组已锁定 · 中断只能续传</text>
+            <g font-size="13">
+              <rect class="head" x="40" y="18" width="120" height="36" rx="8"/><text class="t" x="100" y="41" text-anchor="middle" font-weight="700">卡 A（主卡）</text>
+              <rect class="head" x="240" y="18" width="120" height="36" rx="8"/><text class="t" x="300" y="41" text-anchor="middle" font-weight="700">手机 App</text>
+              <rect class="head" x="410" y="18" width="140" height="36" rx="8"/><text class="t" x="480" y="41" text-anchor="middle" font-weight="700">Tangem 服务器</text>
+              <rect class="head" x="600" y="18" width="100" height="36" rx="8"/><text class="t" x="650" y="41" text-anchor="middle" font-weight="700">卡 B</text>
+              <rect class="head" x="760" y="18" width="100" height="36" rx="8"/><text class="t" x="810" y="41" text-anchor="middle" font-weight="700">卡 C</text>
+            </g>
+            <line class="life" x1="100" y1="54" x2="100" y2="600"/><line class="life" x1="300" y1="54" x2="300" y2="600"/><line class="life" x1="480" y1="54" x2="480" y2="600"/><line class="life" x1="650" y1="54" x2="650" y2="600"/><line class="life" x1="810" y1="54" x2="810" y2="600"/>
+            <g font-size="12">
+              <path class="edge" d="M100 92H296" marker-end="url(#ar)"/><text class="t" x="200" y="84" text-anchor="middle">① 扫描：读卡 + 卡签名</text><text class="tcm" x="200" y="108" text-anchor="middle" font-size="10.5">AttestCardKey</text>
+              <path class="edge-acc" d="M300 124H476" marker-end="url(#ara)"/><text class="t" x="390" y="116" text-anchor="middle">在线验真</text>
+              <path class="edge" d="M300 166H104" marker-end="url(#ar)"/><text class="t" x="200" y="158" text-anchor="middle">② 创建钱包 / 写入种子</text><text class="tcm" x="200" y="182" text-anchor="middle" font-size="10.5">CreateWallet</text>
+              <path class="edge" d="M100 220H296" marker-end="url(#ar)"/><text class="t" x="200" y="212" text-anchor="middle">③ 主卡给出 linking key</text><text class="tcm" x="200" y="236" text-anchor="middle" font-size="10.5">noBackup</text>
+              <path class="edge" d="M650 266H304" marker-end="url(#ar)"/><text class="t" x="560" y="258" text-anchor="middle">④ 卡 B 公钥（须为空卡、同代）</text>
+              <path class="edge-acc" d="M300 292H476" marker-end="url(#ara)"/><text class="t" x="390" y="310" text-anchor="middle">取厂商证书</text>
+              <path class="edge" d="M810 336H304" marker-end="url(#ar)"/><text class="t" x="640" y="328" text-anchor="middle">⑤ 卡 C 公钥 + 取证书（同上）</text>
+              <text class="tb" x="300" y="384" text-anchor="middle" font-size="12.5">⑥ 设置访问码（只存在手机内存）</text>
+              <path class="edge" d="M300 446H104" marker-end="url(#ar)"/><text class="t" x="200" y="438" text-anchor="middle">⑦ 校验证书，签 attestSignature</text><text class="tcm" x="200" y="462" text-anchor="middle" font-size="10.5">LinkBackupCards → cardLinked(2)</text>
+              <path class="edge" d="M100 500H296" marker-end="url(#ar)"/><text class="t" x="200" y="492" text-anchor="middle">用 B/C 的 key 加密私钥 + salt</text><text class="tcm" x="200" y="516" text-anchor="middle" font-size="10.5">ReadBackupData → active(2)</text>
+              <path class="edge" d="M300 548H646" marker-end="url(#ar)"/><text class="t" x="475" y="540" text-anchor="middle">⑧ 私钥密文 + 访问码 → active(2)</text>
+              <path class="edge" d="M300 578H806" marker-end="url(#ar)"/><text class="t" x="600" y="570" text-anchor="middle">⑨ 同上；v8 顺带算默认派生地址</text>
+              <text class="tb" x="450" y="626" text-anchor="middle" font-size="12.5">⑩ 手机端状态 finished，清掉暂存数据，进入钱包首页</text>
+            </g>
+          </svg>
+          <figcaption>来源：SDK <code>BackupService.swift</code> 及各条命令。⑦ 同一次贴卡里还写入了 B、C 的公钥、备份卡张数和访问码。界面文案可能随版本变化，步骤顺序以代码为准。⑦ 到 ⑨ 之间私钥只以密文经过手机，这正是专利权利要求里“不可信中间设备”那一步。</figcaption>
+        </figure>
+        <ul class="list">
+          <li><b>3 张卡完成后对等</b>：任何一张都能单独签名，用户不用记哪张是主卡。</li>
+          <li><b>每张卡首次扫描要联网一次</b>：① 验真，④⑤ 下载厂商证书。官方说所有卡都扫过一遍后，可以断网完成设置和备份。</li>
+          <li><b>访问码一次设好</b>，⑦ 到 ⑨ 统一写进 3 张卡；备份之前卡上还没有访问码。</li>
+          <li><b>③ 可以选“稍后备份”</b>，这时是 1 张卡的钱包；以后只要还是 <code>noBackup</code>，可以从设置里重走 ③ 到 ⑨。官方博客里“add them later through the app's device management section”说的就是这种推迟备份。</li>
+        </ul>
+
+        <h3>同组卡的信任在哪一步写入</h3>
+        <p class="thesis">同组信任不是一步写完的：<b>主卡在 ⑦ 记下全组，备份卡在 ⑧⑨ 记下全组</b>。③④⑤ 只是交出公钥、收集材料，还没有卡写入“组员名单”。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>步骤</th><th>命令</th><th>写入或交出的信任材料</th><th>结果</th></tr></thead>
+          <tbody>
+            <tr><td>③ 贴 A</td><td><code>StartPrimaryCardLinking</code></td><td>A 交出 <code>primaryCardLinkingKey</code></td><td>A 只亮出身份，还没记任何人</td></tr>
+            <tr><td>④⑤ 贴 B、C</td><td><code>StartBackupCardLinking</code></td><td>手机把 A 的 linking key 写给 B、C；B、C 交出 <code>backupCardLinkingKey</code> 和 <code>cardSignature</code>，手机再联网取厂商证书</td><td>B、C 记住“我的主卡是 A”，还不知道其它备份卡</td></tr>
+            <tr><td>⑦ 贴 A</td><td><code>LinkBackupCards</code></td><td>写入每张备份卡的 linking key、厂商证书、<code>cardSignature</code>，以及张数和访问码；A 校验后签出 <code>backupAttestSignature</code></td><td><b>A 的名单定下来</b>（<code>cardLinked</code>）；同一次贴卡里 <code>ReadBackupData</code> 加密私钥</td></tr>
+            <tr><td>⑧ 贴 B</td><td><code>LinkPrimaryCard</code> → <code>WriteBackupData</code></td><td>写入 A 的 linking key、A 的证书、A 签的 <code>backupAttestSignature</code>、全部备份卡的 linking key 和访问码</td><td><b>B 的名单定下来</b>，这时才第一次知道 C；然后写入私钥密文</td></tr>
+            <tr><td>⑨ 贴 C</td><td>同 ⑧</td><td>同 ⑧</td><td>C 的名单定下来，整组完成</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li><b>和重置访问码的关系</b>：重置时被重置的卡交出的正是 <code>primaryCardLinkingKey</code> 和 ⑦ 签出、⑧⑨ 分发到每张卡上的 <code>backupAttestSignature</code>，确认卡拿它和自己存的值核对。所以组的身份就是“A 的 linking key + A 在 ⑦ 签的证明”。<span class="tag src">推断</span> 依据是字段名，固件校验逻辑未公开。</li>
+          <li><b>⑦ 是不可逆的分界点</b>：A 签出 <code>backupAttestSignature</code> 后名单就固定了。</li>
+          <li><b>⑦ 到 ⑨ 之间中断会留下单方面信任</b>：A 已认 B、C，B、C 还没认 A，此时 B、C 不能当确认卡；这是 SDK 把中间数据存进 SecureStorage、支持续做的原因。</li>
+        </ul>
+        <p class="prose" style="color:var(--muted);font-size:13.5px">来源：SDK <code>StartPrimaryCardLinkingCommand</code>、<code>StartBackupCardLinkingCommand</code>、<code>LinkBackupCardsCommand</code>、<code>FinalizeBackupCardTask</code>、<code>LinkPrimaryCardCommand</code>。</p>
+        <h3>什么情况下算完成备份</h3>
+        <p>主卡的 <code>backupStatus</code> 有三种取值，只有 <code>noBackup</code> 能发起备份（<code>canBackup</code> 只对它为 true）。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>时刻</th><th>主卡状态</th><th>备份卡状态</th><th>还能加卡吗</th></tr></thead>
+          <tbody>
+            <tr><td>③ 到 ⑤：读主卡、加备份卡</td><td><code>noBackup</code></td><td>空卡</td><td><span class="tag ok">能</span> 只是在手机上做准备</td></tr>
+            <tr><td>⑦ <code>LinkBackupCards</code> 后</td><td><code>cardLinked(n)</code></td><td>不变</td><td><span class="tag risk">不能</span> 卡数 n 已写进主卡</td></tr>
+            <tr><td>⑦ <code>ReadBackupData</code> 后</td><td><code>active(n)</code>，所有钱包标为 <code>hasBackup</code></td><td>不变</td><td><span class="tag risk">不能</span></td></tr>
+            <tr><td>⑧ ⑨ 每张卡写完</td><td><code>active(n)</code></td><td><code>active(n)</code></td><td><span class="tag risk">不能</span></td></tr>
+            <tr><td>全部写完</td><td><code>active(n)</code></td><td><code>active(n)</code></td><td><span class="tag risk">不能</span> 手机端 <code>finished</code></td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li><b>主卡在 ⑦ 就是 <code>active</code></b>，哪怕备份卡一张都还没写。</li>
+          <li><b>中断窗口是 ⑦ 之后、⑨ 之前</b>：主卡已锁，只能用 <code>hasIncompleteBackup</code> 继续写剩下的卡。</li>
+          <li><b>中间数据加密存在手机 SecureStorage</b>，换手机或删 App 就没了，只能对主卡 ResetBackup 或恢复出厂。</li>
+          <li>以上状态取自 SDK 在手机端维护的副本，真正的判断在卡片固件，需要真机读卡确认。</li>
+        </ul>
+
+        <h3>什么时候就不能继续复制卡</h3>
+        <p>主卡只有在“<b>还没备份过、卡里已经有钱包</b>”这一个窗口期才能复制。下面每一种都会让复制失败（依据 <code>StartPrimaryCardLinkingCommand</code> 等的前置检查）。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>情况</th><th>SDK 报错</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>主卡已备份（<code>active</code>）</td><td><code>backupFailedAlreadyCreated</code></td><td>卡组成员固定，不能再加第 3、4 张</td></tr>
+            <tr><td>主卡已配对未写完（<code>cardLinked</code>）</td><td>同上</td><td>只能继续上次中断的备份</td></tr>
+            <tr><td>备份卡数到顶</td><td><code>tooMuchBackupCards</code></td><td>最多 2 张；v8 开 <code>extendedBackup</code> 后 3 张</td></tr>
+            <tr><td>工厂没开备份</td><td><code>backupNotAllowed</code></td><td>卡上 <code>isBackupAllowed = false</code></td></tr>
+            <tr><td>固件太老</td><td><code>backupFailedFirmware</code></td><td>不支持备份协议</td></tr>
+            <tr><td>主卡里没有钱包</td><td><code>backupFailedEmptyWallets</code></td><td>先创建或导入钱包</td></tr>
+            <tr><td>备份卡不是空卡、代际不同</td><td>错误码 41225 等</td><td>新老两代卡不能互备</td></tr>
+            <tr><td>取不到厂商证书</td><td>—</td><td>每张卡首次扫描时必须联网下载证书，之后可以离线</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li><b>唯一的重开方式是清空重来</b>：每张卡做 PurgeWallet，再 ResetBackup，状态回到 <code>noBackup</code>。卡上还有已备份的钱包时 ResetBackup 会被拒绝（<code>resetBackupFailedHasBackedUpWallets</code>）。</li>
+          <li><b>丢卡之后</b>：助记词钱包可以重置或换一套新卡，重新导入助记词；卡内生成的私钥无法导出，只能把资产转到新卡组。</li>
+          <li><span class="tag risk">待实测</span> <code>ResetBackup</code> 会检查“还有没有 <code>hasBackup</code> 的钱包”，说明备份后卡上可能新建钱包。这类钱包没有被备份，只存在这一张卡上。</li>
+        </ul>
+        <div class="note diff"><b>对我们的启示</b><span>如果走“助记词写入多张卡”的专利规避路线，任何时候都能再写一张新卡，补卡天然比 Tangem 灵活。</span></div>
+
+        <h3>为什么不允许中途加备份卡</h3>
+        <p class="thesis">官方的理由只有一句：<b>如果能多次添加备份设备，攻击者就能在你不知情的情况下复制你的私钥</b>。开发者文档站 developers.tangem.com 需要登录，没能读到；下面引文来自帮助中心和官方博客。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>官方来源</th><th>原文</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://tangem.com/en/help-center/security/how-backup-works/" target="_blank" rel="noopener">帮助中心：How Backup Works</a></td><td>“For security purposes, you can back up and clone a private key only once.”<br>“Since the devices operate independently of the company's servers and are unaware of each other, … If backup devices could be added multiple times, an attacker could make copies of your key without your knowledge.”<br><span class="tm" style="color:var(--muted)">想加第三台设备：先恢复出厂、再用三台重建，重置前先转走资产。</span></td></tr>
+            <tr><td><a href="https://tangem.com/en/blog/post/how-tangem-wallet-backs-up-private-keys/" target="_blank" rel="noopener">官方博客：How Tangem Wallet Backs Up Private Keys</a></td><td>“The Tangem chip firmware allows for one backup to be completed.”<br>“After giving or receiving a private key, the card will cease to initiate the backup procedure.”</td></tr>
+            <tr><td><a href="https://tangem.com/en/help-center/security/device-loss-recovery/" target="_blank" rel="noopener">帮助中心：Device Loss Recovery</a></td><td>“Since creating a backup and cloning a private key is possible only once … adding new devices to an existing wallet is impossible.”</td></tr>
+            <tr><td><a href="https://tangem.com/en/learning-hub/post/what-to-do-lost-hardware-wallet/" target="_blank" rel="noopener">学习中心：Lost Your Hardware Wallet?</a></td><td>“you cannot add a new replacement card to a finalized Tangem wallet set.”</td></tr>
+          </tbody>
+        </table></div>
+        <div class="tbl"><table>
+          <thead><tr><th>官方说法</th><th>含义</th></tr></thead>
+          <tbody>
+            <tr><td>卡片不连 Tangem 服务器</td><td>没有云端账本记录“这个钱包有几张卡”，服务器拦不住多出来的副本</td></tr>
+            <tr><td>卡片彼此不知道对方</td><td>卡组建好后多出一张 D 卡，A、B、C 都感知不到，也收不到通知</td></tr>
+            <tr><td>所以必须一次定好数量</td><td>副本数只在开卡那一刻确定，之后固件永久拒绝再发起备份</td></tr>
+            <tr><td>否则攻击者可以悄悄复制</td><td>拿到卡加访问码的人，用自己买的空白正品卡就能克隆；厂商证书只证明“是正品卡”，证明不了“是你的卡”</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note warn"><b>博客里“之后可以添加”的正确理解</b><span><a href="https://tangem.com/en-GB/blog/post/tangem-security-features/" target="_blank" rel="noopener">官方博客 Security Features in Tangem Wallet</a>（2026-02-23，Tangem team）写着 “You can create backups immediately or add them later through the app's device management section.” 指的是<b>开卡时跳过、以后补做那唯一一次备份</b>，不是备份完成后还能再加卡。帮助中心明确说 “If you add one backup device now, you cannot add more backups later.”，规则以帮助中心为准。“跳过备份、以后补做”在帮助中心里没有明文，只有这篇博客和 SDK 代码（<code>canBackup</code>）两处依据。</span></div>
+        <ul class="list">
+          <li><span class="tag src">推断</span> 官方没提的理由：手机不可信，导出窗口越长越危险；访问码重置依赖“同套其他卡”，能加卡就能扩大信任；固件不能升级，状态要尽量简单。</li>
+          <li><b>对外文案</b>：把“推迟备份”和“追加备份卡”分开写，否则用户会以为丢卡能补卡。</li>
+          <li><b>如果我们要支持事后补卡</b>，就要补上 Tangem 缺的“知情”环节：其他卡在场确认；延时生效加推送通知、可撤销；卡内记录复制次数和成员公钥。丢失的卡私钥相同、仍能签名，真要踢出只能换私钥并转移资产，或改用多签、MPC。</li>
         </ul>
       </section>
 
@@ -314,7 +423,7 @@ html{scroll-behavior:smooth}
             <tr><td>全部丢失</td><td>无助记词：彻底丢失；有助记词：导入新卡恢复</td></tr>
           </tbody>
         </table></div>
-        <div class="note diff"><b class="h">改进方案：事后补卡</b><p>允许“用现有一张卡 + 访问码，给一张新空卡补做一次备份”，前提是协议里有 linking 和厂商证书机制。纯离线的卡无法真正撤销已丢的卡，所以至少要在 App 里提示风险，或引导用户换新私钥。</p></div>
+        <div class="note diff"><b class="h">改进方案：事后补卡</b><p>允许“用现有一张卡 + 访问码，给一张新空卡补做一次备份”，前提是协议里有 linking 和厂商证书机制。纯离线的卡无法真正撤销已丢的卡，所以至少要在 App 里提示风险，或引导用户换新私钥。</p><p><span class="tag risk">专利</span>补卡用的是同一套卡间传输流程，受 Tangem 备份专利影响，见<a href="#patent">专利风险</a>。</p></div>
       </section>
 
       <!-- 助记词 -->
@@ -388,6 +497,29 @@ html{scroll-behavior:smooth}
           <li><b>再碰要重置的卡</b><span>写入新访问码</span></li>
         </ol></div>
         <p class="prose" style="color:var(--muted);font-size:13.5px">来源：SDK <code>ResetPinService</code>；15 秒等待是故意加的延迟。</p>
+        <h3>重置靠什么建立信任</h3>
+        <p class="prose"><b>凭证是“同时持有同一卡组的两张卡”，不是任何访问码。</b>三条命令（<code>GetResetPinToken</code>、<code>SignResetPinToken</code>、<code>AuthorizeResetPinToken</code>）都写着 <code>shouldAskForAccessCode = false</code>：既不要旧码，也不要另一张卡的码。手机只转发数据，不参与判断。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>信任来源</th><th>怎么起作用</th></tr></thead>
+          <tbody>
+            <tr><td>备份时互相登记</td><td>备份时卡组已交换带 <code>attestSignature</code> 的 linking key；所以未备份（<code>noBackup</code>）的卡不能重置，v8 起 <code>cardLinked</code> 也可以</td></tr>
+            <tr><td>厂商证书背书</td><td>attest 签名证明对方是正品芯片，自制假卡冒充不了确认卡</td></tr>
+            <tr><td>一次性挑战</td><td>挑战由被重置的卡现场生成，确认卡的签名只对这一次有效，录下来也无法重放</td></tr>
+            <tr><td>双方都能拒绝</td><td>任一卡关了恢复开关（<code>isUserCodeRecoveryAllowed</code>）就报 <code>userCodeRecoveryDisabled</code></td></tr>
+          </tbody>
+        </table></div>
+        <p class="prose" style="color:var(--muted);font-size:13.5px"><span class="tag src">推断</span> 被重置的卡会核对确认卡的 key 是不是备份时记下的那几把（反之亦然）。这在闭源固件里；SDK 把卡片返回的 <code>invalidParams</code> 映射为“用错了卡”，与推断一致，需用另一组卡实测。</p>
+        <p class="prose" style="color:var(--muted);font-size:13.5px">这些材料在备份哪一步写进卡里，见<a href="#backup">多卡备份</a>中的“同组卡的信任在哪一步写入”。</p>
+        <h3>访问码到底防谁</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>攻击者手里有</th><th>能否动钱</th><th>原因</th></tr></thead>
+          <tbody>
+            <tr><td>1 张卡</td><td>不能</td><td>签名要访问码；重置必须有同组第二张卡</td></tr>
+            <tr><td>同组 2 张卡</td><td><span class="tag risk">能</span></td><td>贴 A、贴 B、再贴 A，设新码后即可签名；15 秒等待只是拖延</td></tr>
+            <tr><td>2 张卡，但所有备份卡都关了恢复</td><td>不能</td><td>确认卡拒签；代价是机主自己忘码也找不回</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note diff"><b class="h">产品启示</b><p>访问码只防单卡丢失，真正的安全边界是“不让人同时拿到两张卡”。开卡引导要明确告诉用户“同时拿到两张卡的人可以重置访问码”，并把“分开存放”做成一步提示；恢复开关的两种风险（防遗忘 vs 防两卡同丢）要让用户自己选。</p><p>可考虑把重置延迟加长到小时级或加 App 端二次确认；但卡片离线、互不通信，延迟只能在卡内计时或靠 App 实现，作用有限，要和专利规避一起评估。</p></div>
         <div class="note warn"><b class="h">安全案例：激光故障注入</b><p>Ledger Donjon 公开过一种激光故障注入攻击，能跳过旧访问码直接重置。攻击者需要拿到实体卡和价值约 25 万美元的实验室设备。复刻时要请第三方实验室专门测故障注入，产品话术里不要说“绝对安全”。</p></div>
       </section>
 
@@ -415,7 +547,23 @@ html{scroll-behavior:smooth}
           <li><b>ResetBackup</b><span>解除多卡绑定；卡上仍有备份过的钱包时会拒绝</span><em class="lock">需访问码</em></li>
           <li><b>ResetAccessTokens</b><span>清除安全通道令牌（固件 v8+）</span><em class="lock">需访问码</em></li>
         </ol></div>
-        <p class="prose" style="color:var(--muted);font-size:13.5px">先删私钥再解绑，避免出现“私钥还在、但已脱离套卡”的卡。来源：SDK <code>ResetToFactorySettingsTask</code>。</p>
+        <p class="prose" style="color:var(--muted);font-size:13.5px">先删私钥再解绑，避免出现“私钥还在、但已脱离套卡”的卡：这样的卡会变回 <code>noBackup</code>，而 <code>canBackup</code> 只对 <code>noBackup</code> 为真，它就能再复制一次，绕过“只能复制一次”（从代码顺序推出，官方未这样表述）。来源：SDK <code>ResetToFactorySettingsTask</code>、<code>ResetBackupCommand</code>。</p>
+        <h3>恢复出厂后同组信任怎么解除</h3>
+        <p class="thesis">信任由 <code>ResetBackup</code>（APDU <code>backupReset</code>）解除，卡片必须返回 <code>noBackup</code>。但<b>解除只发生在被重置的这张卡上</b>：卡片离线、互不通信、没有服务器，其它卡不会被通知。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>位置</th><th>恢复出厂 A 之后</th></tr></thead>
+          <tbody>
+            <tr><td>A 自己</td><td>变回 <code>noBackup</code>，<code>canResetPin</code> 为 false：不能再给别的卡确认重置，也不能被别的卡重置访问码</td></tr>
+            <tr><td>B、C</td><td>⑧⑨ 写入的组员名单原样保留，仍有 A 的 linking key 和 <code>backupAttestSignature</code>；B、C 之间照常互信、能互相重置访问码</td></tr>
+            <tr><td>旧 A 能否冒充回去</td><td><span class="tag src">推断</span> 基本不行：A 已无私钥和组状态，B、C 是 <code>active</code>，不再接纳新卡；A 解绑时是否销毁原 linking 私钥在固件里，未公开</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li><b>整组恢复出厂要每张卡各做一次</b>。最后剩下的那张没有同组卡帮它重置访问码，绝不能忘码。</li>
+          <li><b>丢失的卡无法从组里撤销</b>。剩下的卡恢复出厂只是把自己移出本组，捡到丢失卡的人仍持有一份私钥，唯一补救是把资产转到新钱包。</li>
+          <li><b>访问码可能恢复成默认值</b>。<code>ResetBackup</code> 的返回里有 <code>pinIsDefault</code>，SDK 按它更新“是否设置了访问码”；哪种情况会回到默认值需真机验证。</li>
+        </ul>
+        <div class="note diff"><b class="h">对我们的启示</b><p>想做“事后补卡”或“踢出丢失的卡”，固件要支持组员名单的版本号或吊销列表，并能更新其余卡上的名单。这和 Tangem 离线、名单一次定死的模型冲突，要在设计阶段先定，并和专利规避一起评估。</p></div>
         <h3>产品设计点</h3>
         <ul class="list">
           <li><span class="tag diff">差异化</span>重置前查链上余额，不为零就强提醒或拦截；Tangem 只有文字提示。</li>
@@ -553,16 +701,74 @@ html{scroll-behavior:smooth}
         </div>
       </section>
 
+      <!-- 专利 -->
+      <section id="patent">
+        <div class="sec-head"><span class="kicker">11 · 法律风险</span><h2>专利风险</h2></div>
+        <p class="thesis">Tangem 在美国持有 3 项专利（专利权人均为 Tangem AG）。其中<b>卡间备份专利几乎覆盖了我们要复刻的备份协议</b>，写代码前必须先做专利评估。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>专利号</th><th>内容</th><th>申请 → 授权</th><th>其它国家/地区</th><th>对我们的影响</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://patents.google.com/patent/US12212665B1/en" target="_blank" rel="noopener">US 12,212,665 B1</a></td><td>通过不可信的手机，在卡与卡之间备份私钥</td><td class="mono">2023-09-11 → 2025-01-28</td><td>Google Patents 未列出其它国家</td><td><span class="tag risk">高</span>照搬备份流程在美国会落入保护范围；“事后补卡”同样受影响</td></tr>
+            <tr><td><a href="https://patents.google.com/patent/US12307443B1/en" target="_blank" rel="noopener">US 12,307,443 B1</a></td><td>能签名交易的戒指硬件钱包</td><td class="mono">2024-04-12 → 2025-05-20</td><td>欧洲申请 EP 4632649 A1（未授权）</td><td><span class="tag ok">低</span>范围很窄，只在做戒指时需对照</td></tr>
+            <tr><td><a href="https://patents.google.com/patent/US11315113B1/en" target="_blank" rel="noopener">US 11,315,113 B1</a></td><td>用卡片或穿戴设备在普通刷卡机上支付加密货币</td><td class="mono">2021-11-08 → 2022-04-26</td><td>欧洲已授权 EP 4177776 B1</td><td><span class="tag src">视情况</span>只有做刷卡机支付才相关</td></tr>
+          </tbody>
+        </table></div>
+        <h3>备份专利保护的是什么（权利要求 1 大意）</h3>
+        <div class="steps-wrap"><ol class="steps">
+          <li><b>经手机连接</b><span>主卡通过不可信的中间设备（手机）连接副设备</span></li>
+          <li><b>接收凭证</b><span>副设备的公开传输密钥、设备公钥、attestation 签名、厂商签名证书</span></li>
+          <li><b>校验</b><span>主卡用厂商公钥校验证书和签名</span></li>
+          <li><b>一次性密钥加密</b><span>Diffie-Hellman 算出只用于这次传输的密钥，加密私钥后经手机发出</span></li>
+        </ol></div>
+        <p class="prose" style="color:var(--muted);font-size:13.5px">对照<a href="#backup">多卡备份</a>一节的时序图：①②（linking key）、③④（厂商证书）、⑤（attestSignature）、⑥⑦（加密后写入）几乎一一对应。</p>
+        <div class="duo">
+          <div class="panel"><h4>写代码前请律师评估</h4><p>可能的规避方向：卡与卡传输不经过手机、不校验厂商证书、备份拆成几份分开保存、换一种密钥传输方式。哪种真能避开，只能由律师对照权利要求原文判断。</p></div>
+          <div class="panel"><h4>确认生效地区</h4><p>备份专利看起来只在美国申请。在中国、欧洲等地销售是否受限需律师确认；在美国销售肯定要谨慎。</p></div>
+          <div class="panel"><h4>查找更早的现有技术</h4><p>智能卡之间复制密钥、校验厂商证书在支付卡和智能卡行业早有先例，找到更早的公开资料能扩大设计空间。</p></div>
+          <div class="panel"><h4>关联主体</h4><p>TANGEM 商标曾以 <a href="https://trademark.justia.com/owners/smart-cash-ag-3784149" target="_blank" rel="noopener">Smart Cash AG</a> 名义注册，正式检索时两个名字都要查。</p></div>
+        </div>
+        <h3>其他公司怎么做备份</h3>
+        <p class="prose">其他公司并没有专门去“绕”这项专利，大多压根不采用“卡 A 经手机把私钥传给卡 B，并校验厂商证书”的做法。权利要求 1 必须同时满足四步：<b>A</b> 经不可信的手机传输；<b>B</b> 接收副设备公钥、attestation 签名和厂商证书；<b>C</b> 用厂商公钥校验；<b>D</b> 用一次性传输密钥加密后发送。下表是各家方案在技术上缺了哪一步。</p>
+        <div class="tbl"><table>
+          <thead><tr><th>路线</th><th>代表产品</th><th>怎么备份</th><th>缺了哪一步</th><th>代价</th></tr></thead>
+          <tbody>
+            <tr><td>助记词由 App 写进多张卡</td><td><a href="https://www.getarculus.com/learn/beginners-guide-set-up-cold-wallet/" target="_blank" rel="noopener">Arculus</a>、<a href="https://www.ellipal.com/blogs/support/x-card-the-complete-user-guide-faqs" target="_blank" rel="noopener">ELLIPAL X Card</a>、<a href="https://docs.keycard.tech/en/blog/keycard-overview-of-security-features" target="_blank" rel="noopener">Keycard</a></td><td>助记词或 seed 在手机上生成，分别写进每张卡</td><td>没有卡与卡传输（A、D 不成立），也不校验厂商证书</td><td>手机接触过私钥，用户要保管助记词</td></tr>
+            <tr><td>Shamir 分片</td><td><a href="https://docs.cypherock.com/cypherock-x1-features/eliminate-messy-paper-backups" target="_blank" rel="noopener">Cypherock X1</a></td><td>私钥拆成 5 份：1 份在专用设备、4 份在卡上，任意 2 份可恢复</td><td>每张卡只存分片，不传完整私钥；由专用设备写入，不经手机</td><td>要额外专用设备；签名要凑 2 份</td></tr>
+            <tr><td>多签</td><td><a href="https://support.bitkey.world/hc/en-us/articles/18842039723924-What-is-recovery-and-how-does-it-work" target="_blank" rel="noopener">Bitkey</a></td><td>手机、硬件、服务器各一把密钥，2-of-3 才能转账</td><td>根本不复制私钥</td><td>依赖服务器；只支持 BTC；EVM 要合约钱包</td></tr>
+            <tr><td>卡间加密导出，不校验厂商证书</td><td><a href="https://github.com/Toporin/Seedkeeper-Applet" target="_blank" rel="noopener">Seedkeeper（Satochip）</a></td><td>用目标卡的 authentikey 加密，经电脑导入另一张卡</td><td>规格里“只导出给经认证的 authentikey”标注为预留、未实现，即没有 C 步</td><td>防不了假卡和中间人</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="list">
+          <li>Keycard 4.0 的卡带 CA 签发的证书，但用于 App 确认卡是正品；备份仍是从 App 写 seed，不是卡对卡。</li>
+          <li>Seedkeeper 开源，公开时间可能早于 Tangem 2023 年 9 月的申请日，<b>可能构成现有技术</b>，日期需律师核实。</li>
+          <li>ELLIPAL 的备份卡是助记词写入还是卡对卡复制，公开资料没说清楚，未核实。</li>
+        </ul>
+        <h3>我们可以选的路线</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>路线</th><th>优点</th><th>代价与风险</th></tr></thead>
+          <tbody>
+            <tr><td>1. 助记词写多卡</td><td><span class="tag ok">法律风险最低</span></td><td>丢掉“手机永远接触不到私钥”的卖点</td></tr>
+            <tr><td>2. 卡间传输但不校验厂商证书，改用用户可见的配对确认</td><td>保留无助记词体验</td><td><span class="tag risk">风险</span>可能被认为“等同侵权”；防假卡能力变弱</td></tr>
+            <tr><td>3. Shamir 分片，每张卡只存一个分片</td><td>最接近“无助记词 + 多卡”</td><td>签名要碰 2 张卡，或需可信设备重组私钥，体验要重新设计</td></tr>
+            <tr><td>4. 专用可信设备做中转</td><td>不经过手机</td><td>是否与“不可信中间设备”不同需律师判断；成本更高</td></tr>
+            <tr><td>5. 多签或 MPC</td><td>完全不复制私钥</td><td>链的支持、Gas 成本、地址兼容性影响很大</td></tr>
+            <tr><td>6. 商业途径：找 Tangem 授权，或先不在美国销售</td><td>不改技术方案</td><td>授权费用；放弃美国市场</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note warn"><b class="h">这是技术对照，不是法律结论</b><p>只读了权利要求 1，可能还有范围更宽的其它独立权利要求；“缺一步就不侵权”还受等同原则限制。最终要由专利律师读完全部权利要求，做 FTO（自由实施）分析。</p></div>
+        <p class="foot" style="border-top:0;padding-top:0">说明：以上只基于每项专利的摘要和权利要求 1，不构成法律意见。</p>
+      </section>
+
       <!-- 差异化 & 待确认 -->
       <section id="next">
-        <div class="sec-head"><span class="kicker">11 · 下一步</span><h2>差异化方向与待确认事项</h2></div>
+        <div class="sec-head"><span class="kicker">12 · 下一步</span><h2>差异化方向与待确认事项</h2></div>
         <div class="duo">
           <div class="panel">
             <h4>差异化方向</h4>
             <ol class="list">
               <li>支持安全的事后补卡，同时消除大部分“为加卡而重置”的场景。</li>
               <li>固件预留升级通道，或至少把备份卡数量设计成可扩展。</li>
-              <li>访问码恢复开关默认开，开卡时讲清楚风险。</li>
+              <li>访问码恢复开关默认开，开卡时讲清楚“同时拿到两张卡就能重置访问码”，并提示分开存放。</li>
               <li>恢复出厂前检查链上余额并拦截。</li>
               <li>可选的 passphrase 隐藏钱包。</li>
             </ol>
@@ -579,6 +785,9 @@ html{scroll-behavior:smooth}
               <li><label><input type="checkbox" id="t7"><span>Tangem 是否把 v8 的 <code>masterSecret</code>（BIP-85）做成了用户功能</span></label></li>
               <li><label><input type="checkbox" id="t8"><span>动态地址和地址发现的 gap limit 取值</span></label></li>
               <li><label><input type="checkbox" id="t9"><span>芯片和 COS 选型：支持哪些曲线、多少个槽位</span></label></li>
+              <li><label><input type="checkbox" id="t10"><span>专利律师评估备份协议与 US 12,212,665 的关系、生效地区和规避方案（含 Smart Cash AG 名下检索）</span></label></li>
+              <li><label><input type="checkbox" id="t11"><span>真机确认：备份完成后再新建的钱包是否只存在一张卡上；各步骤中断后卡片固件里的 <code>backupStatus</code> 是否和 SDK 一致</span></label></li>
+              <li><label><input type="checkbox" id="t12"><span>真机确认：<code>ResetBackup</code> 后访问码是否恢复默认值；已恢复出厂的卡能否被原组其它卡当作确认卡或重新纳入</span></label></li>
             </ul>
           </div>
         </div>
@@ -592,6 +801,8 @@ html{scroll-behavior:smooth}
           <li><a href="https://tangem.com/zh-Hans/help-center/getting-started-with-hardware-wallet/how-to-set-up-with-a-seed-phrase/" target="_blank" rel="noopener">How to Set Up With a Seed Phrase</a></li>
           <li><a href="https://tangem.com/zh-Hans/help-center/troubleshooting/access-code-issues/" target="_blank" rel="noopener">Access Code Issues（帮助中心）</a></li>
           <li><a href="https://tangem.com/en-GB/blog/post/how-to-reset-your-password-on-tangem-wallet/" target="_blank" rel="noopener">How to Reset Forgotten Access Code</a></li>
+          <li><a href="https://tangem.com/en/blog/post/access-code-recovery/" target="_blank" rel="noopener">How to Disable Access Code Recovery</a></li>
+          <li><a href="https://tangem.com/en/help-center/security/all-about-access-code/" target="_blank" rel="noopener">All About Access Code（帮助中心）</a></li>
           <li><a href="https://tangem.com/zh-Hans/help-center/app-functionality/wallet-reset/" target="_blank" rel="noopener">Wallet Reset（帮助中心）</a></li>
           <li><a href="https://tangem.com/zh-Hans/help-center/troubleshooting/wallet-creation-issues/" target="_blank" rel="noopener">Wallet Creation Issues（帮助中心）</a></li>
           <li><a href="https://tangem.com/en/learning-hub/post/what-to-do-lost-hardware-wallet/" target="_blank" rel="noopener">Lost Your Hardware Wallet?</a></li>
@@ -603,6 +814,25 @@ html{scroll-behavior:smooth}
           <li><a href="https://github.com/tangem/tangem-sdk-ios" target="_blank" rel="noopener">tangem-sdk-ios（GitHub）</a>：Backup、ResetCode、Wallet、Card、BIP39</li>
           <li><a href="https://blog.gridinsoft.com/tangem-wallet-laser-attack/" target="_blank" rel="noopener">Tangem 激光攻击报道（Gridinsoft）</a></li>
           <li><a href="https://stronghold.co/learn/cold-wallet-best-practices-protecting-your-shx-with-tangem" target="_blank" rel="noopener">Cold Wallet Best Practices with Tangem（Stronghold）</a></li>
+          <li><a href="https://patents.google.com/patent/US12212665B1/en" target="_blank" rel="noopener">US12212665B1（Google Patents）</a></li>
+          <li><a href="https://patents.google.com/patent/US12307443B1/en" target="_blank" rel="noopener">US12307443B1（Google Patents）</a></li>
+          <li><a href="https://patents.google.com/patent/US11315113B1/en" target="_blank" rel="noopener">US11315113B1（Google Patents）</a></li>
+          <li><a href="https://cointelegraph.com/news/tangem-us-patent-private-key-backup" target="_blank" rel="noopener">Cointelegraph：Tangem 获得私钥传输技术美国专利</a></li>
+          <li><a href="https://markets.financialcontent.com/stocks/article/accwirecq-2025-5-28-tangem-enters-billion-wearables-market-with-us-patented-blockchain-smart-ring" target="_blank" rel="noopener">Tangem 新闻稿：获美国专利的区块链智能戒指</a></li>
+          <li><a href="https://www.afslaw.com/perspectives/alerts/patenting-fintech-arentfox-schiff-obtained-patent-secure-crypto-wallet-and" target="_blank" rel="noopener">ArentFox Schiff：加密钱包与支付协议专利</a></li>
+          <li><a href="https://github.com/Toporin/Seedkeeper-Applet" target="_blank" rel="noopener">Seedkeeper-Applet（GitHub）</a></li>
+          <li><a href="https://docs.keycard.tech/en/blog/keycard-overview-of-security-features" target="_blank" rel="noopener">Keycard：Overview of Security Features</a></li>
+          <li><a href="https://docs.keycard.tech/en/developers/core" target="_blank" rel="noopener">Keycard Core 开发文档</a></li>
+          <li><a href="https://docs.cypherock.com/cypherock-x1-features/eliminate-messy-paper-backups" target="_blank" rel="noopener">Cypherock：Eliminate messy paper backups</a></li>
+          <li><a href="https://support.bitkey.world/hc/en-us/articles/18842039723924-What-is-recovery-and-how-does-it-work" target="_blank" rel="noopener">Bitkey：What is recovery and how does it work</a></li>
+          <li><a href="https://www.getarculus.com/learn/beginners-guide-set-up-cold-wallet/" target="_blank" rel="noopener">Arculus 设置指南</a></li>
+          <li><a href="https://www.ellipal.com/blogs/support/x-card-the-complete-user-guide-faqs" target="_blank" rel="noopener">ELLIPAL X Card 用户指南</a></li>
+          <li><a href="https://tangem.com/en/help-center/security/how-backup-works/" target="_blank" rel="noopener">帮助中心：How Backup Works</a></li>
+          <li><a href="https://tangem.com/en/help-center/security/device-loss-recovery/" target="_blank" rel="noopener">帮助中心：Device Loss Recovery</a></li>
+          <li><a href="https://tangem.com/en/help-center/troubleshooting/wallet-creation-issues/" target="_blank" rel="noopener">帮助中心：Wallet Creation Issues</a></li>
+          <li><a href="https://tangem.com/en/blog/post/how-tangem-wallet-backs-up-private-keys/" target="_blank" rel="noopener">官方博客：How Tangem Wallet Backs Up Private Keys</a></li>
+          <li><a href="https://tangem.com/en-GB/blog/post/tangem-security-features/" target="_blank" rel="noopener">官方博客：Security Features in Tangem Wallet</a></li>
+          <li><a href="https://tangem.com/en/learning-hub/post/what-to-do-lost-hardware-wallet/" target="_blank" rel="noopener">学习中心：Lost Your Hardware Wallet?</a></li>
         </ol>
         <p class="foot">SDK 中的测试数据（如 maxWalletsCount 36 / 10、securityDelay 3000 ms）只说明配置项的含义，不代表零售卡的实际取值。表中“代表链”一列为行业常识补充，非 SDK 原文。</p>
       </section>
