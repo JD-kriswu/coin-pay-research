@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>硬件钱包 Applet 自研方案 · 信任边界 + 开源基座</title>
+<style>
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#15202b; --muted:#566271; --line:#d8dee6;
+  --accent:#1d5d8a; --accent-soft:#e3eef6;
+  --good:#2c7049; --good-soft:#e0f0e6;
+  --warn:#a8501d; --warn-soft:#f8e7dc;
+  --brass:#93702a; --brass-soft:#f5ecd9;
+  --code-bg:#eef1f5;
+  --f-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --f-display:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-mono:"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f141a; --surface:#161d26; --ink:#e4e9ef; --muted:#9aa6b3; --line:#2a3542;
+    --accent:#72b2e0; --accent-soft:#17293a; --good:#73c493; --good-soft:#15291d;
+    --warn:#e38d5c; --warn-soft:#331f15; --brass:#d4ab55; --brass-soft:#2c2416; --code-bg:#1d2631; }
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;margin:0;padding:0 0 80px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.3;margin:0}
+p{margin:0 0 12px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--code-bg);padding:.1em .4em;border-radius:4px}
+a{color:var(--accent)}
+.mast{padding:48px 0 28px;border-bottom:1px solid var(--line);margin-bottom:36px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.mast h1{font-size:clamp(26px,4vw,40px);margin:10px 0 12px}
+.mast .lede{color:var(--muted);max-width:70ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-size:13px;color:var(--muted)}
+section{margin-bottom:44px}
+h2{font-size:24px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:20px}
+h3{font-size:18px;margin:26px 0 10px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:600}
+.box{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);padding:14px 18px;border-radius:6px;margin:16px 0}
+.box.good{border-left-color:var(--good)}
+.box.warn{border-left-color:var(--warn)}
+.box.key{border-left-color:var(--brass);background:var(--brass-soft)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:10px;vertical-align:middle}
+.tag.green{background:var(--good-soft);color:var(--good)}
+.tag.blue{background:var(--accent-soft);color:var(--accent)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tree{font-family:var(--f-mono);font-size:13px;background:var(--code-bg);padding:16px 18px;border-radius:6px;overflow-x:auto;line-height:1.9;white-space:pre}
+ol,ul{margin:0 0 12px;padding-left:24px}
+li{margin-bottom:6px}
+.toc{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 22px;margin-bottom:40px}
+.toc a{text-decoration:none;display:block;padding:3px 0}
+.toc .n{color:var(--muted);font-family:var(--f-mono);margin-right:8px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:20px}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="eyebrow">Applet 自研方案 · v1</div>
+  <h1>硬件钱包 Applet：信任边界 × 开源基座 × 自研清单</h1>
+  <p class="lede">承接《硬件钱包架构图·信任边界视角》(2026-10-29) 的第 6 层展开：applet 用什么开源实现做基座、主要逻辑是什么、我们真正要做的部分是哪些。结论先行：fork status-keycard（Apache-2.0），4-8 周适配，差异点集中在支付授权门卫与卡间备份协议。</p>
+  <div class="meta">
+    <span>日期 <b>2026-10-29</b></span>
+    <span>基座 <b>keycard-tech/status-keycard</b>（Apache-2.0，15 个 Java 文件）</span>
+    <span>性质 <b>工程方案</b></span>
+  </div>
+</header>
+
+<nav class="toc">
+  <b>目录</b>
+  <a href="#s1"><span class="n">1</span>信任边界总图（修正版）</a>
+  <a href="#s2"><span class="n">2</span>开源基座选型：三个候选对比</a>
+  <a href="#s3"><span class="n">3</span>Applet 主要逻辑：15 文件全拆解</a>
+  <a href="#s4"><span class="n">4</span>差异点：我们与 Tangem / Keycard 的不同</a>
+  <a href="#s5"><span class="n">5</span>需要自己做的部分（含工作量）</a>
+  <a href="#s6"><span class="n">6</span>路线图与验证清单</a>
+</nav>
+
+<section id="s1">
+<h2>1 · 信任边界总图（修正版）</h2>
+<p>分层标准不变：<b>这层交到别人手里，他能不能冒充我们、碰用户的钱或数据？能 → 自己握；不能 → 可买/合作，但必须能审计。</b>相对原版图的修正：① 第 6 层补充"卡厂定制 applet"第三条路（飞天模式）；② 卡间备份协议从第 4 层拆出，归入 applet 规格项。</p>
+<table>
+<tr><th style="width:34%">层</th><th style="width:14%">性质</th><th>内容与厂商</th></tr>
+<tr><td><b>1. App 端 + 清晰签名</b></td><td><span class="tag green">自己做</span></td><td>交易构造、多链、防盲签、地址与账户管理。自建。</td></tr>
+<tr><td><b>2. 品牌与账户后端</b></td><td><span class="tag green">自己做</span></td><td>账户体系、固件分发、客服运营入口。云设施可买（AWS），逻辑自控。</td></tr>
+<tr><td><b>3. 用户身份数据</b> <span class="tag warn">命门</span></td><td><span class="tag green">自己握</span></td><td>终端用户 PII 不进代工厂，境外自控设施，与代工厂物理隔离。</td></tr>
+<tr><td><b>4. 找回信任模型 + SOP</b> <span class="tag warn">命门</span></td><td><span class="tag green">自己握</span></td><td>谁持哪片、兜底路径、身份核验/冷静期/申诉。MPC 组件可选 Fireblocks/Web3Auth。</td></tr>
+<tr><td><b>5. 设备真伪密钥 (attestation)</b> <span class="tag warn">命门</span></td><td><span class="tag green">自己握</span></td><td>发卡根密钥自己生成、HSM 保管，绝不进代工厂。</td></tr>
+<tr><td><b>6. 卡内签名 applet</b></td><td><span class="tag blue">买/合作</span></td><td><b>三条路：① fork status-keycard（Apache-2.0）自研适配；② Satochip 开源基座（AGPL 传染）；③ 飞天等卡厂按我方协议定制</b>（原版图"中国卡厂无一家能自研"修正为"无现成钱包 applet 产品可授权，但可定制代工"）。硬性准入：开源 + 可复现构建 + 第三方审计。</td></tr>
+<tr><td><b>7. 安全芯片 (SE)</b></td><td><span class="tag blue">买</span></td><td>同心微 THD89（国产 EAL6+，<b>secp256k1 需实测</b>）/ 汇顶 eSE / NXP / 英飞凌 / 三星。</td></tr>
+<tr><td><b>8. 结构件/组装/物流</b></td><td><span class="tag blue">外包</span></td><td>深圳供应链。只做壳与组装，安全层（6/7）绝不交给只会做卡的厂。</td></tr>
+</table>
+<p class="small">私钥在第 7 层芯片内生成、永不出芯片——全图没有"我们保管用户私钥"这一层。混合托管（2-of-2 服务端联签）如果上，属于第 2 层自控后端的规则，不改边界。</p>
+</section>
+
+<section id="s2">
+<h2>2 · 开源基座选型</h2>
+<table>
+<tr><th>项目</th><th>规模/Language</th><th>License</th><th>活跃</th><th>定位</th></tr>
+<tr><td><b>keycard-tech/status-keycard</b></td><td>15 个 Java 文件</td><td><b>Apache-2.0</b> ✅</td><td>持续维护（2026-10 有 push，★264）</td><td><b>首选基座</b>。以太坊钱包卡完整实现，Status App 百万级用户在用。商用无传染。</td></tr>
+<tr><td>Toporin/SatochipApplet</td><td>模块化 Java</td><td>AGPL-3.0 ⚠️</td><td>活跃（★178）</td><td>备选。BTC 系，Electrum 集成 6 年+。<b>AGPL 传染</b>：网络交互也触发开源义务，闭源商用基本不可行，只作交叉参考。</td></tr>
+<tr><td>Yubico/ykneo-openpgp</td><td>Java</td><td>GPL-2.0</td><td>2020 停更</td><td>PGP 卡参考，非钱包，仅借鉴装载流程。</td></tr>
+</table>
+<div class="box good"><b>选型结论：fork status-keycard。</b>Apache-2.0 是三者中唯一可闭源商用的；模块切分教科书级（一个钱包 applet 的全部 = 15 个文件）；SecureChannelV2 / SECP256k1 / attestation 齐全。Satochip 的价值在"另一个角度的实现"用于交叉验证安全逻辑，不作基座。</div>
+</section>
+
+<section id="s3">
+<h2>3 · Applet 主要逻辑（15 文件全拆解）</h2>
+<div class="tree">KeycardApplet.java   ← 主入口：process(APDU) 命令分发状态机
+├─ 密钥生命周期        种子生成/导入、BIP32 派生、私钥不可导出
+├─ 签名服务            收 hash → 门卫检查 → 芯片内 ECDSA → 返回签名
+├─ SecureChannelV2     卡-App 会话加密：ECDH → HKDF → AES-CCM + 计数器防重放
+├─ SECP256k1.java      secp256k1 软实现（多数 JCOS 不原生支持，自己算）
+├─ IdentApplet         设备身份 + attestation（出厂密钥签名）
+├─ NDEFApplet          NFC 碰一碰弹 URL（开箱引导）
+├─ Capabilities        版本协商（卡能力位）
+├─ CashApplet          支付场景实验模块
+├─ InstallTask         装载流程（install() 预分配全部对象——JCOS 无 GC）
+└─ LockTask            锁定（错误计数 → 锁死）</div>
+
+<h3>逻辑浓缩：5 个模块 + 1 条命</h3>
+<table>
+<tr><th>模块</th><th>职责</th><th>来源</th></tr>
+<tr><td><b>① 密钥保险库</b></td><td>私钥芯片内生成、派生、签名；任何指令读不出明文。卡的灵魂。</td><td>抄 Keycard</td></tr>
+<tr><td><b>② 签名门卫</b></td><td>什么状态可签、要不要 PIN、错误几次锁卡。防盲签是安全核心。</td><td><b>自己写（差异点）</b></td></tr>
+<tr><td><b>③ 安全信道</b></td><td>指令在手机-卡之间的窃听/篡改/重放防护。</td><td>抄 SecureChannelV2</td></tr>
+<tr><td><b>④ 状态机+事务</b></td><td>出厂→初始化→活跃→锁死；JCSystem.beginTransaction() 原子写。</td><td>抄</td></tr>
+<tr><td><b>⑤ 认证与身份</b></td><td>PIN 管理 + 出厂 attestation。</td><td>抄 + 对接自有根密钥</td></tr>
+</table>
+<div class="box key"><b>一条命：install() 预分配所有对象。</b>JavaCard 无 GC，运行时 new = 死。这是 JavaCard 与普通 Java 最大的心智差异，Keycard 全程遵守——改动时也必须遵守。</div>
+
+<h3>业务逻辑边界（架构原则）</h3>
+<p>卡不认识区块链：收到 32 字节 hash，签名返回 64 字节 r||s。UTXO/gas/链规则全在 App。但有<b>三类"看起来像业务"的安全逻辑必须在卡内</b>：签名授权门卫（②）、派生路径白名单（只允许标准路径，防主密钥导出）、密钥用途分离（签名密钥不得用于认证）。</p>
+</section>
+
+<section id="s4">
+<h2>4 · 差异点：我们 vs Tangem vs 原版 Keycard</h2>
+<table>
+<tr><th>能力</th><th>Tangem</th><th>Keycard 原版</th><th>我们的版本</th></tr>
+<tr><td>卡间备份/组协议</td><td>SDK 协议支持，<b>产品锁死不允许中途加卡</b>（官方文档明示：恢复冗余=整套换新）</td><td>❌ 无</td><td><b>做进去：随时加卡入组</b>（协议公开可仿，Tangem 的 0xE8-0xED 指令流已源码级解析）。这是对 Tangem 的直接差异化。</td></tr>
+<tr><td>支付授权门卫</td><td>无（纯自托管定位）</td><td>无</td><td><b>单笔/日累计限额、服务端授权证明校验</b>（混合托管 2-of-2：卡侧一签 + 我方后端过风控后联签）</td></tr>
+<tr><td>找回模型</td><td>多卡冗余 or 助记词</td><td>助记词</td><td>混合托管下<b>服务端参与的可恢复路径</b> + 卡间备份（高净值用户可选层）</td></tr>
+<tr><td>信任根</td><td>Tangem 根密钥</td><td>Status 根密钥</td><td><b>自有发卡根密钥</b>（HSM，第 5 层命门）</td></tr>
+<tr><td>applet 来源</td><td>闭源自研 COS（不可授权）</td><td>开源 Apache-2.0</td><td>fork 后<b>继续开源</b>（信任策略：开源=进攻性放弃协议层护城河，壁垒建在产线+信任根+审计）</td></tr>
+<tr><td>芯片</td><td>三星/Infineon 自研 COS</td><td>NXP JCOP</td><td>同心微 THD89（国产）或 NXP；<b>secp256k1 实测通过才定</b></td></tr>
+</table>
+</section>
+
+<section id="s5">
+<h2>5 · 需要自己做的部分</h2>
+<table>
+<tr><th>#</th><th>事项</th><th>量级</th><th>说明</th></tr>
+<tr><td>1</td><td><b>差异代码：支付授权门卫</b></td><td>几百行 + 设计</td><td>限额状态机、服务端授权证明的卡内校验（验签+防重放）。新增 APDU 指令。</td></tr>
+<tr><td>2</td><td><b>差异代码：卡间备份协议</b></td><td>2-3 周</td><td>组建立（验真→签字→盖章→ECDH 传种子密文）、中途加卡、密码轮换。Keycard 没有，照 Tangem 公开协议重实现。</td></tr>
+<tr><td>3</td><td><b>信任根建设</b></td><td>密钥仪式 + HSM</td><td>发卡根密钥生成/保管/注入流程。第 5 层命门，一行开源代码替不了。</td></tr>
+<tr><td>4</td><td><b>产线对接</b></td><td>2-3 个月</td><td>飞天 pre-personalization：GP SCP03 真密钥轮换、逐卡唯一密钥注入、卡面/包装。开发卡（40..4F 公开测试密钥）→ 量产卡两条世界。</td></tr>
+<tr><td>5</td><td><b>App + SDK 适配</b></td><td>数月（非本方案重点）</td><td>NFC 会话、交易构造、防盲签 UI。宿主 App 已有，接 SDK 层。</td></tr>
+<tr><td>6</td><td><b>验证闭环</b></td><td>持续</td><td>jcardsim 仿真 → 真卡测试（算法矩阵/时序）→ 第三方审计（管别人的钱，从第一天按可审计标准写）。</td></tr>
+</table>
+<div class="box warn"><b>开源基座给的是"发动机"（会写），剩下的是"车队"（发行）。</b>类比验证：Tangem App+SDK 全开源仍活得好——壁垒在卡商关系、信任根、产线、审计、运营，不在代码。Keycard 把 applet 从"2 年自研"压缩到"4-8 周适配"，但第 1-5 层（App/后端/数据/找回/真伪密钥）一行开源代码都替不了。</div>
+</section>
+
+<section id="s6">
+<h2>6 · 路线图与验证清单</h2>
+<h3>里程碑</h3>
+<ol>
+<li><b>W1-2 基座跑通</b>：clone status-keycard → jcardsim 仿真跑全流程 → 淘宝开发卡（¥200 级）真卡装载（GP 测试密钥）</li>
+<li><b>W3-6 差异开发</b>：支付授权门卫 + 卡间备份协议（jcardsim 先行，真卡验证）</li>
+<li><b>W7-8 信任根</b>：发卡根密钥仪式（HSM）+ attestation 链打通（IdentApplet 对接自有根）</li>
+<li><b>M2-M3 产线</b>：芯片选型实测（THD89 secp256k1 / JCAlgTest 矩阵）→ 飞天 pre-personalization 试产小批量</li>
+<li><b>M3+ 审计与发行</b>：第三方审计（applet 几百行，审计便宜一个量级）→ 试点发行</li>
+</ol>
+<h3>验证清单（不可跳过）</h3>
+<ul>
+<li>secp256k1：<b>JCAlgTest 算法矩阵 + 真卡跑 BIP32 测试向量</b>，不能只看 EAL6+ 证书（国产卡算法支持参差）</li>
+<li>装载：开发卡公开测试密钥 40..4F 阶段<b>不放任何真资产</b>；SCP03 真密钥在 pre-personalization 后独有</li>
+<li>防篡改四道门核对：SCP03 装载 / JCOS 防火墙 / 物理 EAL5+/6+ / attestation+DAP</li>
+<li>代码红线：不动 SecureChannelV2 计数器语义；install() 预分配原则不破坏；软实现密码原语不做侧信道优化（宁可慢）</li>
+</ul>
+</section>
+
+<footer>
+<p>来源：keycard-tech/status-keycard（15 文件源码级拆解，Apache-2.0）、Toporin/SatochipApplet（AGPL-3.0）、tangem-sdk-android-old backup 目录（0xE8-0xED 协议解析）、Tangem 官方博客《Lost your Tangem wallet?》（补卡规则）、本机《硬件钱包架构图·信任边界视角 20261029》PDF（本方案为其第 6 层展开与修正）。</p>
+<p class="small">2026-10-29 · coin-pay-research · 本方案为工程视角，密钥注入环节与 SCP03 流程需硬件/安全工程师落地设计，安全评审须由具资质者出具。</p>
+</footer>
+
+</div>
+</body>
+</html>
